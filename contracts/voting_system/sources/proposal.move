@@ -1,4 +1,4 @@
-module voting_system::dashboard{
+module voting_system::proposal{
     use sui::object::{UID};
     use std::string::String;
     use sui::tx_context::TxContext;
@@ -14,7 +14,7 @@ module voting_system::dashboard{
         voter_registry: vector<address>
     }   
 
-    public fun create_proposal(
+    public fun create(
         title: String,
         description: String,
         expiration: u64,
@@ -32,5 +32,25 @@ module voting_system::dashboard{
         };
         transfer::share_object(proposal);
     }
+
+    public fun title (self: &Proposal) : String{
+        self.title
+    }
+    public fun desc (self: &Proposal) : String{
+        self.description
+    }
+    public fun voted_yes_count (self: &Proposal) : u64{
+        self.voted_yes_count
+    }
+    public fun voted_no_count (self: &Proposal) : u64{
+        self.voted_no_count
+    }
+    public fun expiration (self: &Proposal) : u64{
+        self.expiration
+    }
+    public fun creator (self: &Proposal) : address{
+        self.creator
+    }
+
 
 }

@@ -2,6 +2,7 @@ module voting_system::proposal{
     use sui::object::{UID};
     use std::string::String;
     use sui::tx_context::TxContext;
+    use voting_system::dashboard::AdminCap;
 
     public struct Proposal has key{
         id: UID,
@@ -15,6 +16,7 @@ module voting_system::proposal{
     }   
 
     public fun create(
+        _admin_cap: &AdminCap,
         title: String,
         description: String,
         expiration: u64,

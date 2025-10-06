@@ -1,6 +1,9 @@
 module voting_system::dashboard;
-
 use sui::tx_context::{Self, TxContext};
+use sui::types;
+
+const EDuplicateProposal: u64 = 0;
+const EInvalidOtw: u64 = 1;
 
 public struct Dashboard has key{
     id: UID,
@@ -11,12 +14,17 @@ public struct AdminCap has key{
     id: UID,
 }
 
-fun init(ctx: &mut TxContext) {
-    new(ctx);
-    transfer::transfer(AdminCap{id: object::new(ctx)}, ctx.sender());
+public struct DASHBOARD has drop{}
+
+fun init(otw: DASHBOARD,  ctx: &mut TxContext) {
+    let admin_cap = AdminCap{id: object::new(ctx)};
+    new(otw,ctx);
+    transfer::transfer(admin_cap, ctx.sender());
 }
 
-public fun new(ctx: &mut TxContext) {
+public fun new(otw: DASHBOARD, ctx: &mut TxContext) {
+    assert!(types::is_one_time_witness(&otw), EInvalidOtw);
+
     let dashboard = Dashboard{
         id: object::new(ctx),
         proposals_ids: vector[],
@@ -26,22 +34,32 @@ public fun new(ctx: &mut TxContext) {
 }
 public fun register_proposal(self: &mut Dashboard, proposal_id: ID){
     // self.proposals_ids.push_back(proposal_id);
+    assert!(!self.proposals_ids.contains(&proposal_id), EDuplicateProposal);
     vector::push_back(&mut self.proposals_ids, proposal_id);
+}
+public fun proposal_ids(self: &Dashboard ): vector<ID>{
+    self.proposals_ids 
 }
 
 #[test_only]
 public fun issue_admin_cap(ctx: &mut TxContext){
     transfer::transfer(AdminCap{id: object::new(ctx)}, ctx.sender());
 }
+#[test_only]
+public fun new_otw(_ctx: &mut TxContext): DASHBOARD {
+    DASHBOARD{}
+}
+
 
 #[test]
-fun test_init_module(){
+fun test_create_proposal_with_admincap(){
 
     use sui::test_scenario::{Self, Scenario};
     let creator = @0xCA;
     let mut scenario: Scenario = test_scenario::begin(creator); 
     {
-        init(scenario.ctx());
+        let otw = DASHBOARD{};
+        init(otw, scenario.ctx());
     };    
     scenario.next_tx(creator);
     {
@@ -57,3 +75,4 @@ fun test_init_module(){
     };
     test_scenario::end(scenario);
 }
+

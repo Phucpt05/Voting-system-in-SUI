@@ -21,7 +21,7 @@ module voting_system::proposal{
         description: String,
         expiration: u64,
         ctx: &mut TxContext,
-    ){
+    ): ID{
         let proposal = Proposal{            
             id: object::new(ctx),
             title,
@@ -32,7 +32,9 @@ module voting_system::proposal{
             creator: ctx.sender(),
             voter_registry: vector[],
         };
+        let id = proposal.id.to_inner(); 
         transfer::share_object(proposal);
+        id
     }
 
     public fun title (self: &Proposal) : String{

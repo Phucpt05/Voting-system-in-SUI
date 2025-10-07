@@ -31,8 +31,8 @@ function OwnedObject() {
       }
       <div className='space-y-2'>
         {
-          response.data.map(objectRes =>(
-            <SuiObjects key={objectRes.data?.objectId} objectRes={objectRes}/>
+          response.data.map((objectRes, index) =>(
+            <SuiObjects key={`${objectRes.data?.objectId}-${index}`} objectRes={objectRes}/>
           ))
         }
       </div>

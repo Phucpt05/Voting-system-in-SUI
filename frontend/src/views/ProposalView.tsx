@@ -1,28 +1,43 @@
-import React from 'react'
+import React, { FC } from 'react'
+import { useNetworkVariable } from '../config/networkConfig';
+import { useSuiClientQuery } from '@mysten/dapp-kit';
+import { SuiObjectData } from '@mysten/sui/client';
+import { SuiID } from '../vite-env';
+import { ProposalItem } from '../components/proposal/ProposalItem';
 
-const PROPOSAL_COUNT = 10;
 
-const ProposalItem = () =>{
-    return(
-        <div className='p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800 hover:border-blue-500 transition-colors'> 
-            <div className='text-xl font-semibold mb-2'>Title: Hello There</div>
-            <div className='text-gray-700 dark:text-gray-400'>Desc: What is your vote ?</div>
-        </div>
-    )
-}
 
 const ProposalView = () => {
+    const dashboardId = useNetworkVariable("dashboardId");
+    const {data: dataResponse, isPending, error } = useSuiClientQuery(
+    "getObject", {
+        id: dashboardId,
+        options: {
+            showContent: true,
+        }
+    }
+    );
+    if(isPending) return <div className='text-center text-gray-500'>Loading...</div>
+    if(error) return <div className='text-center text-red-500'>Error: {error?.message}</div>
+    if(!dataResponse) return <div className='text-center text-red-500'>Not Found</div>
+
   return (
     <>
         <h1 className='text-4xl font-bold mb-8'>New Proposals </h1>
         <div className='grid lg:grid-cols-3 sm:grid-cols-2 gap-6'>
-            {new Array(PROPOSAL_COUNT).fill(1).map((id) => (
-                <ProposalItem key={id * Math.random()} />
-            ))}
+            {dataResponse.data ? getDashboardFields(dataResponse.data)?.proposals_ids.map(id => (
+                <ProposalItem key={id} proposal_id={id}/>
+            )) : []}
         </div>
     </>
-
   )
+};
+const getDashboardFields = (data: SuiObjectData)=>{
+    if(data.content?.dataType !== "moveObject") return null;
+    return data.content?.fields as {
+        id: SuiID,
+        proposals_ids: string[]
+    };
 }
 
 export default ProposalView

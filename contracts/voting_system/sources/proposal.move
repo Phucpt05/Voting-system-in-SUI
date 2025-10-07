@@ -12,15 +12,14 @@ module voting_system::proposal{
         voted_no_count: u64,
         expiration: u64,
         creator: address,
-        voter_registry: vector<address>
+        voter_registry: vector<address>,
     }   
-
     public fun create(
         _admin_cap: &AdminCap,
         title: String,
         description: String,
         expiration: u64,
-        ctx: &mut TxContext,
+        ctx: &mut TxContext
     ): ID{
         let proposal = Proposal{            
             id: object::new(ctx),

@@ -4,7 +4,7 @@ import OwnedObject from "../components/OwnedObjects";
 export const WalletStatus = () =>{
     const  account = useCurrentAccount();
     return (
-        <div className="my-2 p-4 border rounded-lg bg-gray-100 dark:bg-gray-800">
+        <div className="my-2 p-4 border rounded-lg bg-gray-200 dark:bg-gray-800">
             <h2 className="mb-2 text-lg font-bold">Wallet Status</h2>
             {account ? (
                 <div className="flex flex-col space-y-1">

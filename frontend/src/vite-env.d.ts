@@ -1,4 +1,4 @@
 /// <reference types="vite/client" />
-export type SuiID = {
+export interface SuiID {
     id: string,
 }

@@ -1,6 +1,6 @@
 import { SuiID } from "./vite-env"
 
-export type Proposal ={
+export interface Proposal{
     id: SuiID,
     title: string,
     description: string,

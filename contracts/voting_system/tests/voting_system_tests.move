@@ -2,7 +2,7 @@
 module voting_system::voting_system_tests;
 
     use sui::test_scenario::{Self, Scenario};
-    use voting_system::proposal::{Self, Proposal};
+    use voting_system::proposal::{Self, Proposal, VoteProofNFT};
     use voting_system::dashboard::{Self, AdminCap, Dashboard, DASHBOARD};
 
     const EWrongVote: u64 = 0;
@@ -19,7 +19,7 @@ fun test_create_proposal_with_admin(){
     scenario.next_tx(user);
     {
         let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
-        new_proposal(&admin_cap, scenario.ctx());
+        let proposal_id = new_proposal(&admin_cap, scenario.ctx());
         test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
     };
     scenario.next_tx(user);
@@ -159,6 +159,36 @@ fun test_duplicate_voting(){
         // proposal::vote(&mut proposal, false, scenario.ctx());
 
         test_scenario::return_shared(proposal);
+    };
+    test_scenario::end(scenario);
+
+}
+#[test]
+fun test_issue_vote_proof(){
+    let admin = @0xA01;
+    let user = @0xB0B;
+    
+    let mut scenario: Scenario = test_scenario::begin(admin); 
+    {
+        dashboard::issue_admin_cap(scenario.ctx());
+    };
+    scenario.next_tx(admin);
+    {    
+        let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
+        
+        new_proposal(&admin_cap, scenario.ctx());
+        test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
+    };
+    scenario.next_tx(user);
+    {
+        let mut proposal = test_scenario::take_shared<Proposal>(&scenario);
+        proposal::vote(&mut proposal,true, scenario.ctx());
+        test_scenario::return_shared(proposal);
+    };
+    scenario.next_tx(user);
+    {
+        let vote_nft = test_scenario::take_from_sender<VoteProofNFT>(&scenario);
+        test_scenario::return_to_sender(&scenario, vote_nft);
     };
     test_scenario::end(scenario);
 

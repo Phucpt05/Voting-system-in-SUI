@@ -134,3 +134,32 @@ fun test_voting(){
     test_scenario::end(scenario);
 
 }
+#[test]
+#[expected_failure(abort_code = voting_system::proposal::EDuplicateVote)]
+fun test_duplicate_voting(){
+    let admin = @0xA01;
+    let tuan = @0xB0B;
+    
+    let mut scenario: Scenario = test_scenario::begin(admin); 
+    {
+        dashboard::issue_admin_cap(scenario.ctx());
+    };
+    scenario.next_tx(admin);
+    {    
+        let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
+        
+        new_proposal(&admin_cap, scenario.ctx());
+        test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
+    };
+    scenario.next_tx(tuan);
+    {
+        let mut proposal = test_scenario::take_shared<Proposal>(&scenario);
+        proposal::vote(&mut proposal,true, scenario.ctx());
+        proposal::vote(&mut proposal, false, scenario.ctx());
+        // proposal::vote(&mut proposal, false, scenario.ctx());
+
+        test_scenario::return_shared(proposal);
+    };
+    test_scenario::end(scenario);
+
+}

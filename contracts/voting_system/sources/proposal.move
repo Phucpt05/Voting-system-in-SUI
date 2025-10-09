@@ -1,8 +1,12 @@
+
 module voting_system::proposal{
     use sui::object::{UID};
-    use std::string::String;
     use sui::tx_context::TxContext;
     use voting_system::dashboard::AdminCap;
+    use std::string::String;
+    use sui::table::{Self, Table};
+
+    const EDuplicateVote: u64 = 0;
 
     public struct Proposal has key{
         id: UID,
@@ -12,30 +16,20 @@ module voting_system::proposal{
         voted_no_count: u64,
         expiration: u64,
         creator: address,
-        voter_registry: vector<address>,
+        voters: Table<address, bool>,
     }   
-    public fun create(
-        _admin_cap: &AdminCap,
-        title: String,
-        description: String,
-        expiration: u64,
-        ctx: &mut TxContext
-    ): ID{
-        let proposal = Proposal{            
-            id: object::new(ctx),
-            title,
-            description,
-            voted_yes_count: 0,
-            voted_no_count: 0,
-            expiration,
-            creator: ctx.sender(),
-            voter_registry: vector[],
+    // public function
+    public fun vote(self: &mut Proposal, vote_yes: bool, ctx: &TxContext){
+        assert!(!self.voters.contains(ctx.sender()), EDuplicateVote);
+        if(vote_yes){
+            self.voted_yes_count = self.voted_yes_count + 1;
+        }else{
+            self.voted_no_count = self.voted_no_count + 1; 
         };
-        let id = proposal.id.to_inner(); 
-        transfer::share_object(proposal);
-        id
+        table::add(&mut self.voters, ctx.sender(), vote_yes);
     }
 
+    //  View function
     public fun title (self: &Proposal) : String{
         self.title
     }
@@ -55,5 +49,26 @@ module voting_system::proposal{
         self.creator
     }
 
-
+    // ===admin function ===
+    public fun create(
+        _admin_cap: &AdminCap,
+        title: String,
+        description: String,
+        expiration: u64,
+        ctx: &mut TxContext
+    ): ID{
+        let proposal = Proposal{            
+            id: object::new(ctx),
+            title,
+            description,
+            voted_yes_count: 0,
+            voted_no_count: 0,
+            expiration,
+            creator: ctx.sender(),
+            voters : table::new(ctx),
+        };
+        let id = proposal.id.to_inner(); 
+        transfer::share_object(proposal);
+        id
+    }
 }

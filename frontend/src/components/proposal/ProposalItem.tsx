@@ -43,7 +43,6 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id }) => {
     const expirationDate = new Date(proposal.expiration * 1000);
     const currentDate = new Date();
     const isExpired = expirationDate < currentDate;
-    console.log(expirationDate)
 
     return (
         <>

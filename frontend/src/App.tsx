@@ -3,6 +3,7 @@ import ProposalView from "./views/ProposalView";
 import Navbar from "./components/Navbar";
 import { useNavigation } from "./providers/theme/navigation/NavigationContext";
 import WalletView from "./views/WalletView";
+import { ToastContainer } from "react-toastify";
 
   const Pages = () => {
     const { currentPage } = useNavigation();
@@ -20,14 +21,17 @@ import WalletView from "./views/WalletView";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-        <Navbar />
-        <div className=" max-w-screen-xl m-auto pt-16">
-          <Pages />
+    <>
+      <ToastContainer/>
+      <div>
+        <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+          <Navbar />
+          <div className=" max-w-screen-xl m-auto pt-16">
+            <Pages />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

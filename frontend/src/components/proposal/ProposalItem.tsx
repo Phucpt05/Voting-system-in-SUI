@@ -117,7 +117,10 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id }) => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 proposal={proposal}
-                onVote={(votedYes: boolean) => console.log(votedYes)}
+                onVote={(votedYes: boolean) => {
+                    console.log(votedYes);
+                    setIsModalOpen(false);
+                }}
             />
         </>
     )
@@ -136,7 +139,10 @@ function parseProposal(data: SuiObjectData): Proposal | null {
 }
 
 function formatUnixTime(timestampSec: number) {
-    const expirationDate = new Date(timestampSec * 1000);
+    // Check if the timestamp is in milliseconds rather than seconds
+    // If it's a very large number (greater than 1000000000000), it's likely in milliseconds
+    const isMilliseconds = timestampSec > 1000000000000;
+    const expirationDate = isMilliseconds ? new Date(timestampSec) : new Date(timestampSec * 1000);
     const now = new Date();
     
     // Check if expired

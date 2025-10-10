@@ -1,5 +1,9 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { Proposal } from "../../types";
+import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useNetworkVariable } from "../../config/networkConfig";
+import { Transaction } from "@mysten/sui/transactions";
+import {toast} from "react-toastify";
 
 interface VoteModalProps{
   isOpen: boolean;
@@ -14,7 +18,53 @@ export const VoteModal: FC<VoteModalProps> = ({
   proposal,
   onVote
 }) => {
+  const {connectionStatus} = useCurrentWallet();
+  const {mutate: signAndExecute} = useSignAndExecuteTransaction();
+  const suiClient = useSuiClient();
+  const packageId = useNetworkVariable("packageId");
+  const toastId = useRef<number| string>();
+
   if (!isOpen) return null;
+  const showToast = (message: string) => toastId.current = toast(message);
+  const dissmissToast = (message: string) =>{
+    toast.dismiss(toastId.current);
+    toast(message, {autoClose: 2000});
+  };
+
+  const vote = (voteYes: boolean )=>{
+    // console.log("package id: " + packageId);
+    // console.log("proposal id: " + proposal.id.id);
+    // console.log("Voted yes: " + voteYes);
+    const tx = new Transaction();
+    tx.moveCall({
+      arguments:[
+        tx.object(proposal.id.id),
+        tx.pure.bool(voteYes),
+        tx.object("0x6")
+      ],
+      target: `${packageId}::proposal::vote`
+    });
+    showToast("Progressing Transaction");
+    signAndExecute({
+      transaction: tx
+    },{
+      onError: () =>{
+        alert("Transaction failed");
+        dissmissToast("Tx failed!")
+      },
+      onSuccess: async ({digest}) =>{
+        const {effects} = await suiClient.waitForTransaction({
+          digest,
+          options: {
+            showEffects: true
+          }
+        });
+        console.log(effects);
+        dissmissToast("Tx Successful!")
+        onVote(voteYes);
+      }
+    });
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -27,18 +77,20 @@ export const VoteModal: FC<VoteModalProps> = ({
             <span>👎No votes: {proposal.voted_no_count}</span>
           </div>
           <div className="flex justify-between gap-4">
-            <button
-              className="flex-1 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors"
-              onClick={()=>onVote(true)}
-            >
-              Vote Yes
-            </button>
-            <button
-              className="flex-1 bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition-colors"
-              onClick={()=>onVote(false)}
-            >
-              Vote No
-            </button>
+            {connectionStatus === "connected" ?  <>
+              <button
+                className="flex-1 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors"
+                onClick={()=>vote(true)}
+              >
+                Vote Yes
+              </button>
+              <button
+                className="flex-1 bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition-colors"
+                onClick={()=>vote(false)}
+              >
+                Vote No
+              </button>
+            </>: <ConnectButton connectText="Connect to vote"/>}
           </div>
           <button
             onClick={onClose}

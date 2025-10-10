@@ -1,13 +1,8 @@
 sui client ptb --assign admin_cap --object-id <ADMIN_CAP_OBJECT_ID> --assign dashboard --object-id <DASHBOARD_OBJECT_ID> --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::proposal::create admin_cap "Proposal 1" "Proposal description 1" 1740309061 --assign proposal_id --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::dashboard::register_proposal dashboard proposal_id
 -------------------
 
-sui client ptb --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::proposal::create @0x026ca452739e2ac3eef93670052673eee684a29be8aa1da96acb6e67ec3785cd '"Proposal 1"' '"Proposal description 1"' 1740309061 --assign proposal_id --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::dashboard::register_proposal @0x08f9be7b2e9295d10a8b9672df5ccdddee9d1ef86ca7c20adbcff17b57b20bdf proposal_id  
 
-sui client ptb \
-  --move-call 0xe096a63dbe1f2abc50ce479e597ca637f651738dabc712226da926ebe01884d2::proposal::create \
-    @0xd95bc5c6270f641e8de8bb4213832c1ebc4853bedbb876998bd3e79d30619e8c \
-    "Proposal 1" "Proposal description 1" 1740309061 \
-  --assign proposal_id \
-  --move-call 0xe096a63dbe1f2abc50ce479e597ca637f651738dabc712226da926ebe01884d2::dashboard::register_proposal \
-    @0xb36b393ba3abbe3c2ce5419d623cec395dd719d7d66ec17c982ee765581dd7a0 \
-    proposal_id
+
+sui client ptb --move-call 0x73fcf7f7a3219a85db9ceacbf848e6f0f0c7bfb58f5164da0e9f0f0c95c08d47::proposal::create @0xbc8f2381b3f488cf90d405380e6214de4e11c338e516d96662ba4681dd76f51d '"Proposal 1"' '"Proposal description 1"' 1737975258 --assign proposal_id --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::dashboard::register_proposal @0x08f9be7b2e9295d10a8b9672df5ccdddee9d1ef86ca7c20adbcff17b57b20bdf proposal_id  
+
+

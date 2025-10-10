@@ -1,5 +1,4 @@
 module voting_system::dashboard;
-use sui::tx_context::{Self, TxContext};
 use sui::types;
 
 const EDuplicateProposal: u64 = 0;

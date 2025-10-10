@@ -3,6 +3,6 @@ sui client ptb --assign admin_cap --object-id <ADMIN_CAP_OBJECT_ID> --assign das
 
 
 
-sui client ptb --move-call 0x73fcf7f7a3219a85db9ceacbf848e6f0f0c7bfb58f5164da0e9f0f0c95c08d47::proposal::create @0xbc8f2381b3f488cf90d405380e6214de4e11c338e516d96662ba4681dd76f51d '"Proposal 1"' '"Proposal description 1"' 1737975258 --assign proposal_id --move-call 0x6510a45842a542b5778ad17987107dc3439d5913816ace739169c94faf98aa6b::dashboard::register_proposal @0x08f9be7b2e9295d10a8b9672df5ccdddee9d1ef86ca7c20adbcff17b57b20bdf proposal_id  
+sui client ptb --move-call 0x73fcf7f7a3219a85db9ceacbf848e6f0f0c7bfb58f5164da0e9f0f0c95c08d47::proposal::create @0xbc8f2381b3f488cf90d405380e6214de4e11c338e516d96662ba4681dd76f51d '"Proposal 1"' '"Proposal description 1"' 1762789432 --assign proposal_id --move-call 0x73fcf7f7a3219a85db9ceacbf848e6f0f0c7bfb58f5164da0e9f0f0c95c08d47::dashboard::register_proposal @0xddd6bd5a85bd288ef8c6209175fa56059e0e5ddc61bfa2400189636f0a5bf42e @0xbc8f2381b3f488cf90d405380e6214de4e11c338e516d96662ba4681dd76f51d proposal_id  
 
 

@@ -10,6 +10,11 @@ export interface Proposal{
     voter_registry: string[],
     creator: string,
 }
+export interface VoteNft {
+    id: SuiID,
+    proposalId: string,
+    url: string,
+}
 
 
     // public struct Proposal has key{

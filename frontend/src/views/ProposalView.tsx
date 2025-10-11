@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { useNetworkVariable } from '../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 import { PaginatedObjectsResponse, SuiObjectData } from '@mysten/sui/client';
@@ -6,13 +6,14 @@ import { SuiID } from '../vite-env';
 import { ProposalItem } from '../components/proposal/ProposalItem';
 import { useVoteNfts } from '../hooks/useVoteNfts';
 import { VoteNft } from '../types';
+import { CreateProposalModal } from '../components/proposal/CreateProposalModal';
 
 
 
 const ProposalView = () => {
     const dashboardId = useNetworkVariable("dashboardId");
     const {data: voteNftsRes} = useVoteNfts();
-    const {data: dataResponse, isPending, error } = useSuiClientQuery(
+    const {data: dataResponse, isPending, error, refetch } = useSuiClientQuery(
     "getObject", {
         id: dashboardId,
         options: {
@@ -21,6 +22,7 @@ const ProposalView = () => {
     }
     );
    const voteNfts = extractVoteNfts(voteNftsRes);
+   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     console.log(voteNfts);
     if(isPending) return <div className='flex justify-center items-center py-16'>
@@ -46,9 +48,18 @@ const ProposalView = () => {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent pb-5">
                 Voting Proposals
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
                 Participate in the governance of our platform by casting your vote on active proposals
             </p>
+            <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Create Proposal
+            </button>
         </div>
         
         {proposals && proposals.length === 0 ? (
@@ -74,6 +85,15 @@ const ProposalView = () => {
                 ))}
             </div>
         )}
+        
+        <CreateProposalModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onProposalCreated={() => {
+                refetch();
+                setIsCreateModalOpen(false);
+            }}
+        />
     </div>
   )
 };

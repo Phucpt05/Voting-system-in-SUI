@@ -48,91 +48,101 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted }) =>
 
     return (
         <>
-            <div 
-                className={`relative overflow-hidden rounded-xl shadow-md transition-all duration-300 transform hover:scale-[1.02] 
-                ${isExpired ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:shadow-lg border-blue-500/30"}
+            <div
+                className={`relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-[1.02]
+                ${isExpired ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:shadow-xl border-blue-500/30"}
                 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700`}
                 onClick={() => !isExpired && setIsModalOpen(true)}
             >
                 {/* Add a subtle accent bar at the top */}
-                <div className={`absolute top-0 left-0 right-0 h-1 ${isExpired ? "bg-red-500" : "bg-blue-500"}`}></div>
+                <div className={`absolute top-0 left-0 right-0 h-1.5 ${isExpired ? "bg-gradient-to-r from-red-500 to-red-600" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`}></div>
 
                 {/* Content with better padding and spacing */}
-                <div className="p-5 pt-6">
+                <div className="p-6 pt-7">
                     {/* Title section with better typography */}
-                    <div className="mb-3">
-                        <h3 className={`text-xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : "text-gray-800 dark:text-gray-100"} mb-1`}>
+                    <div className="mb-4">
+                        <h3 className={`text-2xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : "text-gray-800 dark:text-gray-100"} mb-2`}>
                             {proposal?.title}
                         </h3>
                         {/* Add creator info */}
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                            <span>Created by: {proposal?.creator?.substring(0, 6)}...{proposal?.creator?.substring(proposal?.creator.length - 4)}</span>
+                            <span className="inline-flex items-center">
+                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                </svg>
+                                Created by: {proposal?.creator?.substring(0, 6)}...{proposal?.creator?.substring(proposal?.creator.length - 4)}
+                            </span>
                         </div>
                     </div>
 
                     {/* Description with better styling */}
-                    <div className="mb-4">
-                        <p className={`text-gray-600 dark:text-gray-300 text-sm ${isExpired ? "text-red-400 dark:text-red-300" : ""}`}>
+                    <div className="mb-5">
+                        <p className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed ${isExpired ? "text-red-400 dark:text-red-300" : ""}`}>
                             {proposal?.description}
                         </p>
                     </div>
 
                     {/* Vote counts with better visual presentation */}
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-4">
                         <div className="flex space-x-6">
-                            <div className={`flex items-center ${isExpired ? "text-green-700 dark:text-green-400" : "text-green-600 dark:text-green-400"}`}>
-                                <span className="mr-1">👍</span>
-                                <span className="font-medium">{proposal?.voted_yes_count}</span>
+                            <div className={`flex items-center px-3 py-1 rounded-full ${isExpired ? "bg-green-100/50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"}`}>
+                                <span className="mr-1.5">👍</span>
+                                <span className="font-semibold">{proposal?.voted_yes_count}</span>
                             </div>
-                            <div className={`flex items-center ${isExpired ? "text-red-700 dark:text-red-400" : "text-red-600 dark:text-red-400"}`}>
-                                <span className="mr-1">👎</span>
-                                <span className="font-medium">{proposal?.voted_no_count}</span>
+                            <div className={`flex items-center px-3 py-1 rounded-full ${isExpired ? "bg-red-100/50 dark:bg-red-900/20 text-red-700 dark:text-red-400" : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"}`}>
+                                <span className="mr-1.5">👎</span>
+                                <span className="font-semibold">{proposal?.voted_no_count}</span>
                             </div>
                         </div>
 
                         {/* Expiration with better styling */}
-                        <div className={`text-xs font-medium px-2 py-1 rounded-full ${isExpired
-                                ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                                : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                        <div className={`text-xs font-bold px-3 py-1.5 rounded-full ${isExpired
+                                ? "bg-gradient-to-r from-red-100 to-red-200 text-red-800 dark:from-red-900/40 dark:to-red-800/40 dark:text-red-300"
+                                : "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 dark:from-blue-900/40 dark:to-indigo-900/40 dark:text-blue-300"
                             }`}>
                             {formatUnixTime(proposal?.expiration)}
                         </div>
                     </div>
 
-                {/* Add a progress bar to visualize voting results */}
-                <div className="mt-4">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 flex overflow-hidden">
-                    <div
-                    className="bg-green-500 h-2"
-                    style={{
-                        width: `${(proposal?.voted_yes_count / (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100}%`,
-                    }}
-                    ></div>
-                    <div
-                    className="bg-red-500 h-2"
-                    style={{
-                        width: `${(proposal?.voted_no_count / (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100}%`,
-                    }}
-                    ></div>
-                </div>
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    <span>
-                    {Math.round(
-                        (proposal?.voted_yes_count /
-                        (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100
-                    )}
-                    % Yes
-                    </span>
-                    <span>
-                    {Math.round(
-                        (proposal?.voted_no_count /
-                        (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100
-                    )}
-                    % No
-                    </span>
-                </div>
-                </div>
-
+                    {/* Add a progress bar to visualize voting results */}
+                    <div className="mt-5">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 flex overflow-hidden shadow-inner">
+                            <div
+                            className="bg-gradient-to-r from-green-500 to-emerald-500 h-1 transition-all duration-500"
+                            style={{
+                                width: `${(proposal?.voted_yes_count / (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100}%`,
+                            }}
+                            ></div>
+                            <div
+                            className="bg-gradient-to-r from-red-500 to-rose-500 h-1 transition-all duration-500"
+                            style={{
+                                width: `${(proposal?.voted_no_count / (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100}%`,
+                            }}
+                            ></div>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">
+                            <span className="inline-flex items-center">
+                                <svg className="w-3 h-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                {Math.round(
+                                    (proposal?.voted_yes_count /
+                                    (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100
+                                )}
+                                % Yes
+                            </span>
+                            <span className="inline-flex items-center">
+                                <svg className="w-3 h-3 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                {Math.round(
+                                    (proposal?.voted_no_count /
+                                    (proposal?.voted_yes_count + proposal?.voted_no_count || 1)) * 100
+                                )}
+                                % No
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

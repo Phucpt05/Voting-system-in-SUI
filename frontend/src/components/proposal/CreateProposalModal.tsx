@@ -8,12 +8,14 @@ interface CreateProposalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProposalCreated: () => void;
+  isDashboardCreator: boolean;
 };
 
 export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   isOpen,
   onClose,
-  onProposalCreated
+  onProposalCreated,
+  isDashboardCreator
 }) => {
   const { connectionStatus } = useCurrentWallet();
   const { mutate: signAndExecute, isPending, isSuccess } = useSignAndExecuteTransaction();
@@ -159,15 +161,16 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 
           {connectionStatus === "connected" ? (
             <>
-              <button
-                disabled={!isFormValid}
-                className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center ${
-                  !isFormValid
-                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                }`}
-                onClick={createProposal}
-              >
+              {isDashboardCreator ? (
+                <button
+                  disabled={!isFormValid}
+                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center ${
+                    !isFormValid
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  }`}
+                  onClick={createProposal}
+                >
                 {isPending ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -187,6 +190,11 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
                   "Create Proposal"
                 )}
               </button>
+              ) : (
+                <div className="w-full py-3 px-4 rounded-xl font-medium bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 text-center">
+                  Only the dashboard creator can create proposals
+                </div>
+              )}
             </>
           ) : (
             <div className="w-full">

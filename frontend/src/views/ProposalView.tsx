@@ -67,7 +67,7 @@ const ProposalView = () => {
             <p className="text-nowrap text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
                 Participate in the bootcamp of our platform and cast your vote on interested projects!
             </p>
-            {isUserAllowed && (
+            {isDashboardCreator && (
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -170,6 +170,7 @@ const ProposalView = () => {
                 refetch();
                 setIsCreateModalOpen(false);
             }}
+            isDashboardCreator={isDashboardCreator}
         />
     </div>
   )

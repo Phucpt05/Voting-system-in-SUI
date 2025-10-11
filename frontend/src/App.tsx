@@ -1,6 +1,6 @@
 import React from "react";
 import ProposalView from "./views/ProposalView";
-import ProposalRankingView from "./views/ProposalRankingView";
+import ProposalRankingTableView from "./views/ProposalRankingTableView";
 import Navbar from "./components/Navbar";
 import { useNavigation } from "./providers/theme/navigation/NavigationContext";
 import WalletView from "./views/WalletView";
@@ -13,7 +13,7 @@ import { ToastContainer } from "react-toastify";
       case "/":
         return <ProposalView />;
       case "/proposals":
-        return <ProposalRankingView />;
+        return <ProposalRankingTableView />;
       case "/wallet":
         return <WalletView />;
       default:
@@ -74,3 +74,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

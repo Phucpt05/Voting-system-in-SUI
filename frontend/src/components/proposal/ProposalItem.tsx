@@ -7,10 +7,11 @@ import { VoteModal } from "./VoteModal";
 interface ProposalItemPros {
     proposal_id: string,
     hasVoted: boolean;
+    isUserAllowed?: boolean;
     
 }
 
-export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted }) => {
+export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted, isUserAllowed = true }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data: dataResponse, isPending, error } = useSuiClientQuery(
@@ -151,6 +152,7 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted }) =>
                 onClose={() => setIsModalOpen(false)}
                 hasVoted = {hasVoted}
                 proposal={proposal}
+                isUserAllowed={isUserAllowed}
                 onVote={(votedYes: boolean) => {
                     console.log(votedYes);
                     setIsModalOpen(false);

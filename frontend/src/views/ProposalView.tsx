@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react'
 import { useNetworkVariable } from '../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { PaginatedObjectsResponse, SuiObjectData } from '@mysten/sui/client';
 import { SuiID } from '../vite-env';
 import { ProposalItem } from '../components/proposal/ProposalItem';
@@ -12,6 +13,7 @@ import { CreateProposalModal } from '../components/proposal/CreateProposalModal'
 
 const ProposalView = () => {
     const dashboardId = useNetworkVariable("dashboardId");
+    const currentAccount = useCurrentAccount();
     const {data: voteNftsRes} = useVoteNfts();
     const {data: dataResponse, isPending, error, refetch } = useSuiClientQuery(
     "getObject", {
@@ -23,8 +25,18 @@ const ProposalView = () => {
     );
    const voteNfts = extractVoteNfts(voteNftsRes);
    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+   const [allowedAddresses, setAllowedAddresses] = useState<string[]>([]);
+   const [newAddress, setNewAddress] = useState("");
+   
+   // Check if current user is the dashboard creator
+   const dashboardFields = getDashboardFields(dataResponse?.data || undefined);
+   const dashboardCreator = dashboardFields?.creator || "";
+   const isDashboardCreator = currentAccount?.address === dashboardCreator;
+   
+   // Check if current user is allowed to vote/create proposals
+   const isUserAllowed = isDashboardCreator || allowedAddresses.includes(currentAccount?.address || "");
 
-    console.log(voteNfts);
+    console.log(dataResponse?.data?.content);
     if(isPending) return <div className='flex justify-center items-center py-16'>
         <div className='text-center text-gray-500 dark:text-gray-400'>
             <div className='inline-block animate-spin rounded-full h-12 w-12 border-t-3 border-b-3 border-blue-500 mb-4'></div>
@@ -48,18 +60,20 @@ const ProposalView = () => {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent pb-5">
                 Voting Proposals
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
-                Participate in the governance of our platform by casting your vote on active proposals
+            <p className="text-nowrap text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
+                Participate in the bootcamp of our platform and cast your vote on interested projects!
             </p>
-            <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Create Proposal
-            </button>
+            {isUserAllowed && (
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Create Proposal
+                </button>
+            )}
         </div>
         
         {proposals && proposals.length === 0 ? (
@@ -86,6 +100,64 @@ const ProposalView = () => {
             </div>
         )}
         
+        {/* Permission Management Section - Only visible to dashboard creator */}
+        {isDashboardCreator && (
+            <div className="mt-10 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Permission Management</h2>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Add Address to Allowed List
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={newAddress}
+                            onChange={(e) => setNewAddress(e.target.value)}
+                            placeholder="Enter wallet address"
+                            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        />
+                        <button
+                            onClick={() => {
+                                if (newAddress && !allowedAddresses.includes(newAddress)) {
+                                    setAllowedAddresses([...allowedAddresses, newAddress]);
+                                    setNewAddress("");
+                                }
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+                
+                {allowedAddresses.length > 0 && (
+                    <div>
+                        <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">Allowed Addresses</h3>
+                        <div className="space-y-2">
+                            {allowedAddresses.map((address, index) => (
+                                <div key={index} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">
+                                        {address}
+                                    </span>
+                                    <button
+                                        onClick={() => {
+                                            const updatedAddresses = allowedAddresses.filter((_, i) => i !== index);
+                                            setAllowedAddresses(updatedAddresses);
+                                        }}
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        )}
+        
         <CreateProposalModal
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
@@ -104,11 +176,12 @@ function checkVotedNfts(nfts: VoteNft[], proposalId: string){
     })
 }
 
-const getDashboardFields = (data: SuiObjectData)=>{
-    if(data.content?.dataType !== "moveObject") return null;
+const getDashboardFields = (data: SuiObjectData | undefined)=>{
+    if(!data || data.content?.dataType !== "moveObject") return null;
     return data.content?.fields as {
         id: SuiID,
-        proposals_ids: string[]
+        proposals_ids: string[],
+        creator: string
     };
 }
 function extractVoteNfts(nftRes: PaginatedObjectsResponse | undefined){

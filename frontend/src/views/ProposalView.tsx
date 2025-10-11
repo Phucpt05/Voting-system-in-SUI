@@ -29,9 +29,13 @@ const ProposalView = () => {
    const [newAddress, setNewAddress] = useState("");
    
    // Check if current user is the dashboard creator
-   const dashboardFields = getDashboardFields(dataResponse?.data || undefined);
-   const dashboardCreator = dashboardFields?.creator || "";
+   let dashboardCreator = "";
+   if (dataResponse?.data?.content && 'fields' in dataResponse.data.content) {
+     dashboardCreator = (dataResponse.data.content as any).fields.creator || "";
+   }
    const isDashboardCreator = currentAccount?.address === dashboardCreator;
+   console.log("dataResponse: ", dataResponse);
+   console.log("difference: " + dashboardCreator +"-" + currentAccount?.address);
    
    // Check if current user is allowed to vote/create proposals
    const isUserAllowed = isDashboardCreator || allowedAddresses.includes(currentAccount?.address || "");
@@ -95,6 +99,7 @@ const ProposalView = () => {
                         key={id}
                         proposal_id={id}
                         hasVoted={checkVotedNfts(voteNfts, id)}
+                        isUserAllowed={isUserAllowed}
                     />
                 ))}
             </div>
@@ -170,7 +175,6 @@ const ProposalView = () => {
   )
 };
 function checkVotedNfts(nfts: VoteNft[], proposalId: string){
-    console.log(proposalId);
     return nfts.some((nft)=>{
         return nft.proposalId === proposalId;
     })

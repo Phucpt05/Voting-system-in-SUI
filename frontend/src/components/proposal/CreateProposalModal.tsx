@@ -86,7 +86,6 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
             showEffects: true
           }
         });
-        console.log(effects);
         dismissToast("Proposal created successfully!");
         onProposalCreated();
         onClose();

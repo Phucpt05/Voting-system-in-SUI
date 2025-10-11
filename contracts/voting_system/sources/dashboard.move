@@ -7,6 +7,7 @@ const EInvalidOtw: u64 = 1;
 public struct Dashboard has key{
     id: UID,
     proposals_ids: vector<ID>,
+    creator: address,
 }
 
 public struct AdminCap has key{
@@ -27,6 +28,7 @@ public fun new(otw: DASHBOARD, ctx: &mut TxContext) {
     let dashboard = Dashboard{
         id: object::new(ctx),
         proposals_ids: vector[],
+        creator: ctx.sender(),
     };
     transfer::share_object(dashboard);
     
@@ -37,7 +39,11 @@ public fun register_proposal(self: &mut Dashboard ,_admin_cap: &AdminCap ,propos
     vector::push_back(&mut self.proposals_ids, proposal_id);
 }
 public fun proposal_ids(self: &Dashboard ): vector<ID>{
-    self.proposals_ids 
+    self.proposals_ids
+}
+
+public fun creator(self: &Dashboard ): address{
+    self.creator
 }
 
 #[test_only]

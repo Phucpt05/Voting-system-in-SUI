@@ -1,5 +1,5 @@
 import { FC, useState, useRef } from "react";
-import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../../config/networkConfig";
 import { Transaction } from "@mysten/sui/transactions";
 import { toast } from "react-toastify";
@@ -19,7 +19,6 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 }) => {
   const { connectionStatus } = useCurrentWallet();
   const { mutate: signAndExecute, isPending, isSuccess } = useSignAndExecuteTransaction();
-  const suiClient = useSuiClient();
   const packageId = useNetworkVariable("packageId");
   const adminCapId = useNetworkVariable("adminCapId");
   const dashboardId = useNetworkVariable("dashboardId");
@@ -81,13 +80,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
         alert("Transaction failed");
         dismissToast("Tx failed!");
       },
-      onSuccess: async ({ digest }) => {
-        const { effects } = await suiClient.waitForTransaction({
-          digest,
-          options: {
-            showEffects: true
-          }
-        });
+      onSuccess: async () => {
         dismissToast("Proposal created successfully!");
         onProposalCreated();
         onClose();

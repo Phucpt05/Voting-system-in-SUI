@@ -1,5 +1,5 @@
 import { SuiObjectResponse } from '@mysten/sui/client'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 type SuiObjectProp = {
     objectRes: SuiObjectResponse;

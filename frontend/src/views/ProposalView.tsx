@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNetworkVariable } from '../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 import { useCurrentAccount } from '@mysten/dapp-kit';
@@ -14,7 +14,7 @@ import { CreateProposalModal } from '../components/proposal/CreateProposalModal'
 const ProposalView = () => {
     const dashboardId = useNetworkVariable("dashboardId");
     const currentAccount = useCurrentAccount();
-    const {data: voteNftsRes} = useVoteNfts();
+    const {data: voteNftsRes, refetch: refetchProposal} = useVoteNfts();
     const {data: dataResponse, isPending, error, refetch } = useSuiClientQuery(
     "getObject", {
         id: dashboardId,
@@ -27,6 +27,37 @@ const ProposalView = () => {
    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
    const [allowedAddresses, setAllowedAddresses] = useState<string[]>([]);
    const [newAddress, setNewAddress] = useState("");
+   
+   // Load newAddress from localStorage on component mount
+   useEffect(() => {
+     const savedAddress = localStorage.getItem('newAddress');
+     if (savedAddress) {
+       setNewAddress(savedAddress);
+     }
+     
+     const savedAddresses = localStorage.getItem('allowedAddresses');
+     if (savedAddresses) {
+       try {
+         setAllowedAddresses(JSON.parse(savedAddresses));
+       } catch (error) {
+         console.error('Error parsing saved addresses:', error);
+       }
+     }
+   }, []);
+   
+   // Save newAddress to localStorage whenever it changes
+   useEffect(() => {
+     if (newAddress) {
+       localStorage.setItem('newAddress', newAddress);
+     }
+   }, [newAddress]);
+   
+   // Save allowedAddresses to localStorage whenever it changes
+   useEffect(() => {
+     if (allowedAddresses.length > 0) {
+       localStorage.setItem('allowedAddresses', JSON.stringify(allowedAddresses));
+     }
+   }, [allowedAddresses]);
    
    // Check if current user is the dashboard creator
    let dashboardCreator = "";
@@ -98,7 +129,8 @@ const ProposalView = () => {
                     <ProposalItem
                         key={id}
                         proposal_id={id}
-                        hasVoted={checkVotedNfts(voteNfts, id)}
+                        voteNft={voteNfts.find(nft=>nft.proposalId===id)}
+                        onVoteTxSuccess={()=> refetchProposal()}
                         isUserAllowed={isUserAllowed}
                     />
                 ))}
@@ -111,7 +143,7 @@ const ProposalView = () => {
                 <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Permission Management</h2>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Add Address to Allowed List
+                        Add Address to Allowed List (separate multiple addresses with spaces)
                     </label>
                     <div className="flex gap-2">
                         <input
@@ -123,9 +155,21 @@ const ProposalView = () => {
                         />
                         <button
                             onClick={() => {
-                                if (newAddress && !allowedAddresses.includes(newAddress)) {
-                                    setAllowedAddresses([...allowedAddresses, newAddress]);
-                                    setNewAddress("");
+                                if (newAddress.trim()) {
+                                    // Split the input by spaces and filter out empty strings
+                                    const addressesToAdd = newAddress.trim().split(/\s+/).filter(addr => addr.length > 0);
+                                    
+                                    // Filter out addresses that are already in the allowed list
+                                    const newUniqueAddresses = addressesToAdd.filter(addr =>
+                                        !allowedAddresses.includes(addr)
+                                    );
+                                    
+                                    if (newUniqueAddresses.length > 0) {
+                                        const updatedAddresses = [...allowedAddresses, ...newUniqueAddresses];
+                                        setAllowedAddresses(updatedAddresses);
+                                        setNewAddress("");
+                                        localStorage.removeItem('newAddress');
+                                    }
                                 }
                             }}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -148,6 +192,9 @@ const ProposalView = () => {
                                         onClick={() => {
                                             const updatedAddresses = allowedAddresses.filter((_, i) => i !== index);
                                             setAllowedAddresses(updatedAddresses);
+                                            if (updatedAddresses.length === 0) {
+                                                localStorage.removeItem('allowedAddresses');
+                                            }
                                         }}
                                         className="text-red-500 hover:text-red-700"
                                     >
@@ -175,11 +222,6 @@ const ProposalView = () => {
     </div>
   )
 };
-function checkVotedNfts(nfts: VoteNft[], proposalId: string){
-    return nfts.some((nft)=>{
-        return nft.proposalId === proposalId;
-    })
-}
 
 const getDashboardFields = (data: SuiObjectData | undefined)=>{
     if(!data || data.content?.dataType !== "moveObject") return null;
@@ -202,7 +244,6 @@ function getVoteNft(nftData: SuiObjectData|undefined|null): VoteNft{
         proposalId, 
         id,
         url,
-
     }
 }
 export default ProposalView

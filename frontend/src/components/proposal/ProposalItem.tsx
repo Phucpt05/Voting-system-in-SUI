@@ -1,20 +1,20 @@
-import { useSuiClientQuery } from "@mysten/dapp-kit"
+import { useSuiClientQuery} from "@mysten/dapp-kit"
 import { SuiObjectData } from "@mysten/sui/client";
 import { FC, useState } from "react"
-import { Proposal } from "../../types";
+import { Proposal, VoteNft } from "../../types";
 import { VoteModal } from "./VoteModal";
 
 interface ProposalItemPros {
     proposal_id: string,
-    hasVoted: boolean;
+    voteNft: VoteNft | undefined,
     isUserAllowed?: boolean;
-    
+    onVoteTxSuccess: () => void;
 }
 
-export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted, isUserAllowed = true }) => {
+export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, isUserAllowed = true, onVoteTxSuccess }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { data: dataResponse, isPending, error } = useSuiClientQuery(
+    const { data: dataResponse, isPending, error, refetch: refetchProposal } = useSuiClientQuery(
         "getObject", {
         id: proposal_id,
         options: {
@@ -62,9 +62,12 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted, isUs
                 <div className="p-6 pt-7">
                     {/* Title section with better typography */}
                     <div className="mb-4">
-                        <h3 className={`text-2xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : !isUserAllowed ? "text-yellow-600 dark:text-yellow-400" : "text-gray-800 dark:text-gray-100"} mb-2`}>
-                            {proposal?.title}
-                        </h3>
+                        <div className="flex justify-between">
+                            <h3 className={`text-2xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : !isUserAllowed ? "text-yellow-600 dark:text-yellow-400" : "text-gray-800 dark:text-gray-100"} mb-2`}>
+                                {proposal?.title}
+                            </h3>
+                            {!!voteNft?.url && <img src={voteNft?.url} className="w-9 h-8 rounded-full " />}
+                        </div>
                         {/* Add creator info */}
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                             <span className="inline-flex items-center">
@@ -158,10 +161,13 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, hasVoted, isUs
             <VoteModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                hasVoted = {hasVoted}
+                hasVoted = {!!voteNft}
                 proposal={proposal}
                 isUserAllowed={isUserAllowed}
-                onVote={(votedYes: boolean) => {
+                onVote={async () => {
+                    // Refetch the proposal data to get updated vote counts
+                    await refetchProposal();
+                    onVoteTxSuccess();
                     setIsModalOpen(false);
                 }}
             />

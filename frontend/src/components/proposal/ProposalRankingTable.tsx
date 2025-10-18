@@ -1,8 +1,6 @@
-import React, { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useNetworkVariable } from '../../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
-import { SuiObjectData } from '@mysten/sui/client';
-import { SuiID } from '../../vite-env';
 import { Proposal } from '../../types';
 
 interface ProposalRankingTableProps {

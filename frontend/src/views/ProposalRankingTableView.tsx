@@ -1,4 +1,3 @@
-import React, { FC } from 'react';
 import { ProposalRankingTable } from '../components/proposal/ProposalRankingTable';
 import { useNavigation } from '../providers/theme/navigation/NavigationContext';
 

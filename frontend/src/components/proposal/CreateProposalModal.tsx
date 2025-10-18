@@ -72,7 +72,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 
     showToast("Creating proposal...");
     signAndExecute({
-      transaction: tx
+      transaction: tx as any
     }, {
       onError: () => {
         alert("Transaction failed");

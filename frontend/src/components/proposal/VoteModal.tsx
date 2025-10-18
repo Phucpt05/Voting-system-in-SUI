@@ -48,7 +48,7 @@ export const VoteModal: FC<VoteModalProps> = ({
     });
     showToast("Progressing Transaction");
     signAndExecute({
-      transaction: tx
+      transaction: tx as any
     },{
       onError: () =>{
         alert("Transaction failed");

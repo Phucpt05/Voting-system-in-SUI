@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import { useNetworkVariable } from '../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 import { useCurrentAccount } from '@mysten/dapp-kit';
@@ -31,7 +31,6 @@ const ProposalView = () => {
    if (dataResponse?.data?.content && 'fields' in dataResponse.data.content) {
      dashboardCreator = (dataResponse.data.content as any).fields.creator || "";
    }
-   const isDashboardCreator = currentAccount?.address === dashboardCreator;
    console.log("dataResponse: ", dataResponse);
    console.log("difference: " + dashboardCreator +"-" + currentAccount?.address);
    

@@ -37,6 +37,7 @@ const App: React.FC = () => {
         pauseOnHover
         theme="colored"
         className="text-sm"
+        progressClassName="h-1 bg-blue-500 dark:bg-blue-400"
       />
       <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 flex flex-col">
         <Navbar />

@@ -10,7 +10,6 @@ interface VoteModalProps{
   onClose: () => void;
   hasVoted: boolean;
   proposal: Proposal;
-  isUserAllowed?: boolean;
   onVote: (votedYes: boolean ) => void
 };
 
@@ -19,11 +18,10 @@ export const VoteModal: FC<VoteModalProps> = ({
   onClose,
   hasVoted,
   proposal,
-  isUserAllowed = true,
   onVote
 }) => {
   const {connectionStatus} = useCurrentWallet();
-  const {mutate: signAndExecute, isPending, isSuccess} = useSignAndExecuteTransaction();
+  const {mutate: signAndExecute, isPending, isSuccess, reset} = useSignAndExecuteTransaction();
   const suiClient = useSuiClient();
   const packageId = useNetworkVariable("packageId");
   const toastId = useRef<number| string>();
@@ -65,12 +63,13 @@ export const VoteModal: FC<VoteModalProps> = ({
         });
         console.log(effects);
         dissmissToast("Tx Successful!")
+        reset();
         onVote(voteYes);
       }
     });
   }
 
-  const votingDisable = hasVoted || isPending || isSuccess || !isUserAllowed;
+  const votingDisable = hasVoted || isPending || isSuccess;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 p-7 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95 animate-in fade-in-90 zoom-in-90">
@@ -109,13 +108,6 @@ export const VoteModal: FC<VoteModalProps> = ({
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 <span className="font-medium">You have already voted</span>
-              </div>
-            ) : !isUserAllowed ? (
-              <div className="inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full">
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <span className="font-medium">You are not allowed to vote</span>
               </div>
             ) : (
               <div className="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full">

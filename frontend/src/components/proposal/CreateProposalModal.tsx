@@ -8,17 +8,15 @@ interface CreateProposalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProposalCreated: () => void;
-  isDashboardCreator: boolean;
 };
 
 export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   isOpen,
   onClose,
-  onProposalCreated,
-  isDashboardCreator
+  onProposalCreated
 }) => {
   const { connectionStatus } = useCurrentWallet();
-  const { mutate: signAndExecute, isPending, isSuccess } = useSignAndExecuteTransaction();
+  const { mutate: signAndExecute, isPending, isSuccess, reset } = useSignAndExecuteTransaction();
   const packageId = useNetworkVariable("packageId");
   const adminCapId = useNetworkVariable("adminCapId");
   const dashboardId = useNetworkVariable("dashboardId");
@@ -84,6 +82,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
         dismissToast("Proposal created successfully!");
         onProposalCreated();
         onClose();
+        reset();
         // Reset form
         setTitle("");
         setDescription("");
@@ -154,40 +153,34 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 
           {connectionStatus === "connected" ? (
             <>
-              {isDashboardCreator ? (
-                <button
-                  disabled={!isFormValid}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center ${
-                    !isFormValid
-                      ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                  }`}
-                  onClick={createProposal}
-                >
-                {isPending ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating Proposal...
-                  </>
-                ) : isSuccess ? (
-                  <>
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Proposal Created!
-                  </>
-                ) : (
-                  "Create Proposal"
-                )}
-              </button>
+              <button
+                disabled={!isFormValid}
+                className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center ${
+                  !isFormValid
+                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                }`}
+                onClick={createProposal}
+              >
+              {isPending ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating Proposal...
+                </>
+              ) : isSuccess ? (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Proposal Created!
+                </>
               ) : (
-                <div className="w-full py-3 px-4 rounded-xl font-medium bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 text-center">
-                  Only the dashboard creator can create proposals
-                </div>
+                "Create Proposal"
               )}
+            </button>
             </>
           ) : (
             <div className="w-full">

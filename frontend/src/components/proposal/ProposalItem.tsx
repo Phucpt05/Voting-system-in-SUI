@@ -7,11 +7,10 @@ import { VoteModal } from "./VoteModal";
 interface ProposalItemPros {
     proposal_id: string,
     voteNft: VoteNft | undefined,
-    isUserAllowed?: boolean;
     onVoteTxSuccess: () => void;
 }
 
-export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, isUserAllowed = true, onVoteTxSuccess }) => {
+export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVoteTxSuccess }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data: dataResponse, isPending, error, refetch: refetchProposal } = useSuiClientQuery(
@@ -51,19 +50,19 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, isUse
         <>
             <div
                 className={`relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-[1.02]
-                ${isExpired || !isUserAllowed ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:shadow-xl border-blue-500/30"}
+                ${isExpired ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:shadow-xl border-blue-500/30"}
                 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700`}
-                onClick={() => !isExpired && isUserAllowed && setIsModalOpen(true)}
+                onClick={() => !isExpired && setIsModalOpen(true)}
             >
                 {/* Add a subtle accent bar at the top */}
-                <div className={`absolute top-0 left-0 right-0 h-1.5 ${isExpired ? "bg-gradient-to-r from-red-500 to-red-600" : !isUserAllowed ? "bg-gradient-to-r from-yellow-500 to-yellow-600" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`}></div>
+                <div className={`absolute top-0 left-0 right-0 h-1.5 ${isExpired ? "bg-gradient-to-r from-red-500 to-red-600" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`}></div>
 
                 {/* Content with better padding and spacing */}
                 <div className="p-6 pt-7">
                     {/* Title section with better typography */}
                     <div className="mb-4">
                         <div className="flex justify-between">
-                            <h3 className={`text-2xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : !isUserAllowed ? "text-yellow-600 dark:text-yellow-400" : "text-gray-800 dark:text-gray-100"} mb-2`}>
+                            <h3 className={`text-2xl font-bold ${isExpired ? "text-red-500 dark:text-red-400" : "text-gray-800 dark:text-gray-100"} mb-2`}>
                                 {proposal?.title}
                             </h3>
                             {!!voteNft?.url && <img src={voteNft?.url} className="w-9 h-8 rounded-full " />}
@@ -84,14 +83,6 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, isUse
                         <p className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed ${isExpired ? "text-red-400 dark:text-red-300" : ""}`}>
                             {proposal?.description}
                         </p>
-                        {!isUserAllowed && !isExpired && (
-                            <div className="mt-3 flex items-center px-3 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg">
-                                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                                <span className="font-medium text-sm">You are not allowed to vote</span>
-                            </div>
-                        )}
                     </div>
 
                     {/* Vote counts with better visual presentation */}
@@ -163,7 +154,6 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, isUse
                 onClose={() => setIsModalOpen(false)}
                 hasVoted = {!!voteNft}
                 proposal={proposal}
-                isUserAllowed={isUserAllowed}
                 onVote={async () => {
                     // Refetch the proposal data to get updated vote counts
                     await refetchProposal();

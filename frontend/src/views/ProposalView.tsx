@@ -8,6 +8,7 @@ import { ProposalItem } from '../components/proposal/ProposalItem';
 import { useVoteNfts } from '../hooks/useVoteNfts';
 import { VoteNft } from '../types';
 import { CreateProposalModal } from '../components/proposal/CreateProposalModal';
+import { toast } from 'react-toastify';
 
 
 
@@ -25,6 +26,7 @@ const ProposalView = () => {
     );
    const voteNfts = extractVoteNfts(voteNftsRes);
    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+   const [isRefreshing, setIsRefreshing] = useState(false);
    
    // Check if current user is the dashboard creator
    let dashboardCreator = "";
@@ -85,6 +87,13 @@ const ProposalView = () => {
                     There are currently no active proposals. Check back later for new voting opportunities.
                 </p>
             </div>
+        ) : isRefreshing ? (
+            <div className='flex justify-center items-center py-16'>
+                <div className='text-center text-gray-500 dark:text-gray-400'>
+                    <div className='inline-block animate-spin rounded-full h-12 w-12 border-t-3 border-b-3 border-blue-500 mb-4'></div>
+                    <div className='text-lg font-medium'>Refreshing proposals...</div>
+                </div>
+            </div>
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {proposals?.map(id => (
@@ -103,8 +112,14 @@ const ProposalView = () => {
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
             onProposalCreated={() => {
-                refetch();
-                setIsCreateModalOpen(false);
+                setIsRefreshing(true);
+                // Add a delay to ensure blockchain has processed the transaction
+                setTimeout(() => {
+                    refetch();
+                    setIsCreateModalOpen(false);
+                    setIsRefreshing(false);
+                    toast.success("Proposal list refreshed successfully!");
+                }, 2000); // 2 second delay
             }}
         />
     </div>

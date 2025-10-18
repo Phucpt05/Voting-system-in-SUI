@@ -12,7 +12,7 @@ import { ToastContainer } from "react-toastify";
     switch (currentPages) {
       case "/":
         return <ProposalView />;
-      case "/proposals":
+      case "/rankings":
         return <ProposalRankingTableView />;
       case "/wallet":
         return <WalletView />;

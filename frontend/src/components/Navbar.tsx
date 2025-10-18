@@ -33,13 +33,13 @@ const Navbar = () => {
                                 </div>
                             </li>
                             <li>
-                                <div onClick={() => navigate("/proposals")} className={`flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
-                                    currentPage === "/proposals"
+                                <div onClick={() => navigate("/rankings")} className={`flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                                    currentPage === "/rankings"
                                         ? "border-blue-500 text-blue-600 dark:text-blue-400"
                                         : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
                                 }`}>
                                     <svg className="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
                                     Rankings
                                 </div>
@@ -95,8 +95,8 @@ const Navbar = () => {
                     }`}>
                         Home
                     </div>
-                    <div onClick={() => navigate("/proposals")} className={`block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                        currentPage === "/proposals"
+                    <div onClick={() => navigate("/rankings")} className={`block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
+                        currentPage === "/rankings"
                             ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                             : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}>

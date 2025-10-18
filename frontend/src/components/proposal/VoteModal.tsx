@@ -25,6 +25,12 @@ export const VoteModal: FC<VoteModalProps> = ({
   const suiClient = useSuiClient();
   const packageId = useNetworkVariable("packageId");
   const toastId = useRef<number| string>();
+  
+  // Check if proposal is expired
+  const isMilliseconds = proposal.expiration > 1000000000000;
+  const expirationDate = isMilliseconds ? new Date(proposal.expiration) : new Date(proposal.expiration * 1000);
+  const currentDate = new Date();
+  const isExpired = expirationDate < currentDate;
 
   if (!isOpen) return null;
   const showToast = (message: string) => toastId.current = toast(message, {autoClose: false});
@@ -69,7 +75,7 @@ export const VoteModal: FC<VoteModalProps> = ({
     });
   }
 
-  const votingDisable = hasVoted || isPending || isSuccess;
+  const votingDisable = hasVoted || isPending || isSuccess || isExpired;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 p-7 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95 animate-in fade-in-90 zoom-in-90">
@@ -102,7 +108,14 @@ export const VoteModal: FC<VoteModalProps> = ({
           
           {/* Voting status indicator */}
           <div className="text-center">
-            {hasVoted || isSuccess ? (
+            {isExpired ? (
+              <div className="inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">This proposal has expired</span>
+              </div>
+            ) : hasVoted || isSuccess ? (
               <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

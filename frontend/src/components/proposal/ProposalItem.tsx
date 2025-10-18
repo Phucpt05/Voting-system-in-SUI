@@ -41,17 +41,18 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
     const proposal = parseProposal(dataResponse.data);
     if (!proposal?.title) return null;
 
-    // Check if proposal is expired - timestamp is in seconds format
-    const expirationDate = new Date(proposal.expiration * 1000);
+    // Check if proposal is expired - timestamp could be in seconds or milliseconds
+    const isMilliseconds = proposal.expiration > 1000000000000;
+    const expirationDate = isMilliseconds ? new Date(proposal.expiration) : new Date(proposal.expiration * 1000);
     const currentDate = new Date();
     const isExpired = expirationDate < currentDate;
 
     return (
-        <>
+        <div className={` `}>
             <div
                 className={`relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-[1.02]
-                ${isExpired ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:shadow-xl border-blue-500/30"}
-                bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700`}
+                bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700
+                ${isExpired ? "cursor-not-allowed opacity-70 w-100" : "cursor-pointer hover:shadow-xl border-blue-500/30"}`}
                 onClick={() => !isExpired && setIsModalOpen(true)}
             >
                 {/* Add a subtle accent bar at the top */}
@@ -161,7 +162,7 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                     setIsModalOpen(false);
                 }}
             />
-        </>
+        </div>
     )
 }
 

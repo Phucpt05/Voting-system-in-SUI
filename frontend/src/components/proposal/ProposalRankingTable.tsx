@@ -3,11 +3,7 @@ import { useNetworkVariable } from '../../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 import { Proposal } from '../../types';
 
-interface ProposalRankingTableProps {
-    onProposalClick?: (proposalId: string) => void;
-}
-
-export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposalClick }) => {
+export const ProposalRankingTable = () => {
     const dashboardId = useNetworkVariable("dashboardId");
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -156,7 +152,6 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                                     className={`hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition-colors duration-150 ${
                                         index === 0 ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20' : ''
                                     }`}
-                                    onClick={() => onProposalClick && onProposalClick(proposal.id.id)}
                                 >
                                     <td className="py-4 px-4">
                                         <div className="flex items-center">

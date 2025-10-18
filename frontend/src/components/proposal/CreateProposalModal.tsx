@@ -81,7 +81,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
       onSuccess: async () => {
         dismissToast("Proposal created successfully!");
         onProposalCreated();
-        onClose();
+        // Don't call onClose() here since it will be handled by the parent component
         reset();
         // Reset form
         setTitle("");

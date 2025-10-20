@@ -1,7 +1,6 @@
 import { useState} from 'react'
 import { useNetworkVariable } from '../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
-import { useCurrentAccount } from '@mysten/dapp-kit';
 import { PaginatedObjectsResponse, SuiObjectData } from '@mysten/sui/client';
 import { SuiID } from '../vite-env';
 import { ProposalItem } from '../components/proposal/ProposalItem';
@@ -14,7 +13,6 @@ import { toast } from 'react-toastify';
 
 const ProposalView = () => {
     const dashboardId = useNetworkVariable("dashboardId");
-    const currentAccount = useCurrentAccount();
     const {data: voteNftsRes, refetch: refetchProposal} = useVoteNfts();
     const {data: dataResponse, isPending, error, refetch } = useSuiClientQuery(
     "getObject", {
@@ -33,11 +31,7 @@ const ProposalView = () => {
    if (dataResponse?.data?.content && 'fields' in dataResponse.data.content) {
      dashboardCreator = (dataResponse.data.content as any).fields.creator || "";
    }
-   console.log("dataResponse: ", dataResponse);
-   console.log("difference: " + dashboardCreator +"-" + currentAccount?.address);
-   
 
-    console.log(dataResponse?.data?.content);
     if(isPending) return <div className='flex justify-center items-center py-16'>
         <div className='text-center text-gray-500 dark:text-gray-400'>
             <div className='inline-block animate-spin rounded-full h-12 w-12 border-t-3 border-b-3 border-blue-500 mb-4'></div>

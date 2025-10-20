@@ -3,6 +3,9 @@ import { SuiObjectData } from "@mysten/sui/client";
 import { FC, useState } from "react"
 import { Proposal, VoteNft } from "../../types";
 import { VoteModal } from "./VoteModal";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useNetworkVariable } from "../../config/networkConfig";
+import { ProposalStatusControls } from "./ProposalStatusControls";
 
 interface ProposalItemPros {
     proposal_id: string,
@@ -12,6 +15,7 @@ interface ProposalItemPros {
 
 export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVoteTxSuccess }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const currentAccount = useCurrentAccount();
 
     const { data: dataResponse, isPending, error, refetch: refetchProposal } = useSuiClientQuery(
         "getObject", {
@@ -21,7 +25,6 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
         }
     }
     );
-    console.log(dataResponse?.data)
     if (isPending) return <div className='flex justify-center items-center py-8'>
         <div className='text-center text-gray-500 dark:text-gray-400'>
             <div className='inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2'></div>
@@ -34,26 +37,27 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
         <div>{error?.message}</div>
     </div>
     
-    if (!dataResponse || dataResponse.data?.content?.dataType != "moveObject") return <div className='text-center py-4 px-6 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-lg border border-yellow-200 dark:border-yellow-800'>
-        Proposal not found
-    </div>
+    if (!dataResponse || dataResponse.data?.content?.dataType != "moveObject") return null
 
     const proposal = parseProposal(dataResponse.data);
     if (!proposal?.title) return null;
+    console.log("Proposal: ", proposal);
 
     // Check if proposal is expired - timestamp could be in seconds or milliseconds
     const isMilliseconds = proposal.expiration > 1000000000000;
     const expirationDate = isMilliseconds ? new Date(proposal.expiration) : new Date(proposal.expiration * 1000);
     const currentDate = new Date();
-    const isExpired = expirationDate < currentDate;
+    const isDelisted = proposal.status.variant === "Delisted";
+    const isExpired = (expirationDate < currentDate);
+
 
     return (
         <div className={` `}>
             <div
                 className={`relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-[1.02]
                 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700
-                ${isExpired ? "cursor-not-allowed opacity-70 w-100" : "cursor-pointer hover:shadow-xl border-blue-500/30"}`}
-                onClick={() => !isExpired && setIsModalOpen(true)}
+                ${(isExpired || isDelisted) ? "cursor-not-allowed opacity-70 w-100" : "cursor-pointer hover:shadow-xl border-blue-500/30"}`}
+                onClick={() => !(isExpired || isDelisted) && setIsModalOpen(true)}
             >
                 {/* Add a subtle accent bar at the top */}
                 <div className={`absolute top-0 left-0 right-0 h-1.5 ${isExpired ? "bg-gradient-to-r from-red-500 to-red-600" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`}></div>
@@ -89,22 +93,22 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                     {/* Vote counts with better visual presentation */}
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex space-x-6">
-                            <div className={`flex items-center px-3 py-1 rounded-full ${isExpired ? "bg-green-100/50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"}`}>
+                            <div className={`flex items-center px-3 py-1 rounded-full ${(isExpired|| isDelisted) ? "bg-green-100/50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"}`}>
                                 <span className="mr-1.5">👍</span>
                                 <span className="font-semibold">{proposal?.voted_yes_count}</span>
                             </div>
-                            <div className={`flex items-center px-3 py-1 rounded-full ${isExpired ? "bg-red-100/50 dark:bg-red-900/20 text-red-700 dark:text-red-400" : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"}`}>
+                            <div className={`flex items-center px-3 py-1 rounded-full ${(isExpired|| isDelisted) ? "bg-red-100/50 dark:bg-red-900/20 text-red-700 dark:text-red-400" : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"}`}>
                                 <span className="mr-1.5">👎</span>
                                 <span className="font-semibold">{proposal?.voted_no_count}</span>
                             </div>
                         </div>
 
                         {/* Expiration with better styling */}
-                        <div className={`text-xs font-bold px-3 py-1.5 rounded-full ${isExpired
+                        <div className={`text-xs font-bold px-3 py-1.5 rounded-full ${(isExpired || isDelisted)
                                 ? "bg-gradient-to-r from-red-100 to-red-200 text-red-800 dark:from-red-900/40 dark:to-red-800/40 dark:text-red-300"
                                 : "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 dark:from-blue-900/40 dark:to-indigo-900/40 dark:text-blue-300"
                             }`}>
-                            {formatUnixTime(proposal?.expiration)}
+                            {isDelisted? "Delisted": formatUnixTime(proposal?.expiration)}
                         </div>
                     </div>
 
@@ -147,6 +151,11 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                             </span>
                         </div>
                     </div>
+                    
+                    {/* Admin controls for activating/delisting proposals */}
+                    {currentAccount && (
+                        <ProposalStatusControls proposal={proposal} status={proposal.status}/>
+                    )}
                 </div>
             </div>
 

@@ -5,6 +5,7 @@ module voting_system::proposal;
     use sui::table::{Self, Table};
     use sui::url::{Url, new_unsafe_from_bytes};
     use sui::clock::Clock;
+    use sui::event;
 
     const EDuplicateVote: u64 = 0;
     const EProposalDelisted: u64 = 1;
@@ -26,6 +27,11 @@ module voting_system::proposal;
         creator: address,
         status: ProposalStatus,
         voters: Table<address, bool>,
+    }
+    public struct VoteRegisted has copy, drop{
+        proposal_id: ID,
+        voter: address,
+        vote_yes: bool,
     } 
 
     public struct VoteProofNFT has key{
@@ -49,6 +55,11 @@ module voting_system::proposal;
         };
         table::add(&mut self.voters, ctx.sender(), vote_yes);
         issue_vote_proof(self, vote_yes, ctx);
+        event::emit(VoteRegisted{
+            proposal_id: self.id.to_inner(),
+            voter: ctx.sender(),
+            vote_yes
+        })
     }
 
     //  View function
@@ -123,11 +134,16 @@ module voting_system::proposal;
         table::drop(voters);
         object::delete(id)
     }
-
-    public fun change_status(self: &mut Proposal, _admin_cap: &AdminCap, status: ProposalStatus){
-        self.status = status;
+    public fun set_active_status(self: &mut Proposal, admin_cap: &AdminCap){
+        self.change_status(admin_cap, ProposalStatus::Active);
+    }
+    public fun set_delisted_status(self: &mut Proposal, admin_cap: &AdminCap){
+        self.change_status(admin_cap, ProposalStatus::Delisted);
     }
 
+    fun change_status(self: &mut Proposal, _admin_cap: &AdminCap, status: ProposalStatus){
+        self.status = status;
+    }
     fun issue_vote_proof(proposal: &Proposal, vote_yes: bool, ctx: &mut TxContext){
         let mut name = b"NFT ".to_string();
         name.append(proposal.title);
@@ -148,11 +164,3 @@ module voting_system::proposal;
         transfer::transfer(proof, ctx.sender());
     }
 
-#[test_only]
-public fun set_active_status(self: &mut Proposal, admin_cap: &AdminCap){
-    self.change_status(admin_cap, ProposalStatus::Active);
-}
-#[test_only]
-public fun set_delisted_status(self: &mut Proposal, admin_cap: &AdminCap){
-    self.change_status(admin_cap, ProposalStatus::Delisted);
-}

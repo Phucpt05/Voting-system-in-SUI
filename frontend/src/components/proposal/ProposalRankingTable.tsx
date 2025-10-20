@@ -3,7 +3,11 @@ import { useNetworkVariable } from '../../config/networkConfig';
 import { useSuiClientQuery } from '@mysten/dapp-kit';
 import { Proposal } from '../../types';
 
-export const ProposalRankingTable = () => {
+interface ProposalRankingTableProps {
+    onProposalClick?: (proposalId: string) => void;
+}
+
+export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposalClick }) => {
     const dashboardId = useNetworkVariable("dashboardId");
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -46,19 +50,18 @@ export const ProposalRankingTable = () => {
             proposalsData.forEach((obj: any) => {
                 if (obj.data?.content?.dataType === "moveObject") {
                     const fields = obj.data.content.fields;
-                    
                     // Transform the data to match the Proposal interface
                     const proposal: Proposal = {
                         id: { id: obj.data.objectId },
                         title: fields.title,
                         description: fields.description,
+                        status: fields.status,
                         voted_yes_count: Number(fields.voted_yes_count),
                         voted_no_count: Number(fields.voted_no_count),
                         expiration: Number(fields.expiration),
                         voter_registry: fields.voter_registry || [],
                         creator: fields.creator,
                     };
-                    
                     proposalData.push(proposal);
                 }
             });
@@ -66,9 +69,10 @@ export const ProposalRankingTable = () => {
             console.log("Processed proposals array:", proposalData);
             
             // Sắp xếp các proposal theo voted_yes_count từ cao đến thấp
-            const proposalRanking = [...proposalData].sort((a, b) => b.voted_yes_count - a.voted_yes_count);
+            const proposalSort = [...proposalData].sort((a, b) => b.voted_yes_count - a.voted_yes_count);
+            const proposalRanking = proposalSort.filter((proposal)=> proposal.status.variant !== "Delisted");
             console.log("Sorted proposals by voted_yes_count:", proposalRanking);
-            
+
             setProposals(proposalRanking);
             setLoading(false);
         }
@@ -152,6 +156,7 @@ export const ProposalRankingTable = () => {
                                     className={`hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition-colors duration-150 ${
                                         index === 0 ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20' : ''
                                     }`}
+                                    onClick={() => onProposalClick && onProposalClick(proposal.id.id)}
                                 >
                                     <td className="py-4 px-4">
                                         <div className="flex items-center">

@@ -4,6 +4,7 @@ import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction, useSuiCl
 import { useNetworkVariable } from "../../config/networkConfig";
 import { Transaction } from "@mysten/sui/transactions";
 import {toast} from "react-toastify";
+import { SuiClient } from "@mysten/sui/client";
 
 interface VoteModalProps{
   isOpen: boolean;
@@ -40,9 +41,6 @@ export const VoteModal: FC<VoteModalProps> = ({
   };
 
   const vote = (voteYes: boolean )=>{
-    // console.log("package id: " + packageId);
-    // console.log("proposal id: " + proposal.id.id);
-    // console.log("Voted yes: " + voteYes);
     const tx = new Transaction();
     tx.moveCall({
       arguments:[
@@ -67,6 +65,19 @@ export const VoteModal: FC<VoteModalProps> = ({
             showEffects: true
           }
         });
+        const eventResult = await suiClient.queryEvents({
+          query: {Transaction: digest}
+        });
+        if(eventResult.data.length > 0){
+          console.log("first event: ", eventResult);
+          const firstEvent = eventResult.data[0].parsedJson as {proposal_id?: string, voter?: string, vote_yes?: boolean }
+          const id = firstEvent.proposal_id || "No event id found for this criteria";
+          const voter = firstEvent.voter || "No event voter found for this criteria";
+          const vote_yes = firstEvent.vote_yes || "No event vote_yes found for this criteria";
+          console.log("Event Captured!");
+          console.log("info: " + id + "| "+ voter +"| "+ vote_yes);
+        } 
+
         console.log(effects);
         dissmissToast("Tx Successful!")
         reset();

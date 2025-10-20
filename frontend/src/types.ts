@@ -1,9 +1,14 @@
 import { SuiID } from "./vite-env"
 
+export interface ProposalStatus{
+    variant: "Active" | "Delisted"
+}
+
 export interface Proposal{
     id: SuiID,
     title: string,
     description: string,
+    status: ProposalStatus,
     voted_yes_count: number,
     voted_no_count: number,
     expiration: number,

@@ -46,6 +46,7 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
   const changeProposalStatus = (
     proposalId: string, 
     status: ProposalStatus, 
+    onSuccess?: () => void
   ) => {
     try {
       const tx = createTransaction(proposalId, status, packageId, adminCapId);
@@ -66,6 +67,7 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
           onSuccess: () => {
             reset();
             toast.success(successMessage);
+            if(onSuccess) onSuccess();
           },
           onError: (error) => {
             console.error(`Error ${status}ing proposal:`, error);

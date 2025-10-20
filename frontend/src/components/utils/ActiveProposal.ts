@@ -39,7 +39,7 @@ const createTransaction = (
 
 // Custom hook for managing proposal status
 export const useProposalManagement = (): UseProposalManagementReturn => {
-  const { mutate: signAndExecute, isPending, reset } = useSignAndExecuteTransaction();
+  const { mutate: signAndExecute, isPending, reset} = useSignAndExecuteTransaction();
   const packageId = useNetworkVariable("packageId");
   const adminCapId = useNetworkVariable("adminCapId");
 
@@ -64,6 +64,7 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
         },
         {
           onSuccess: () => {
+            reset();
             toast.success(successMessage);
           },
           onError: (error) => {

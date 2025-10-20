@@ -4,7 +4,6 @@ import { FC, useState } from "react"
 import { Proposal, VoteNft } from "../../types";
 import { VoteModal } from "./VoteModal";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../../config/networkConfig";
 import { ProposalStatusControls } from "./ProposalStatusControls";
 
 interface ProposalItemPros {

@@ -95,7 +95,11 @@ const ProposalView = () => {
                         key={id}
                         proposal_id={id}
                         voteNft={voteNfts.find(nft=>nft.proposalId===id)}
-                        onVoteTxSuccess={()=> refetchProposal()}
+                        onVoteTxSuccess={() => {
+                            refetchProposal();
+                            // Also refetch the dashboard to update the list of proposals
+                            refetch();
+                        }}
                     />
                 ))}
             </div>

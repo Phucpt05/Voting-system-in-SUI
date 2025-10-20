@@ -10,9 +10,10 @@ interface ProposalItemPros {
     proposal_id: string,
     voteNft: VoteNft | undefined,
     onVoteTxSuccess: () => void;
+    onProposalStatusChange?: () => void;
 }
 
-export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVoteTxSuccess }) => {
+export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVoteTxSuccess, onProposalStatusChange }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const currentAccount = useCurrentAccount();
 
@@ -153,7 +154,18 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                     
                     {/* Admin controls for activating/delisting proposals */}
                     {currentAccount && (
-                        <ProposalStatusControls proposal={proposal} status={proposal.status}/>
+                        <ProposalStatusControls
+                            proposal={proposal}
+                            status={proposal.status}
+                            onStatusChangeSuccess={async () => {
+                                // Refetch the proposal data to get updated status
+                                await refetchProposal();
+                                // Notify parent component that proposal status has changed
+                                if (onProposalStatusChange) {
+                                    onProposalStatusChange();
+                                }
+                            }}
+                        />
                     )}
                 </div>
             </div>

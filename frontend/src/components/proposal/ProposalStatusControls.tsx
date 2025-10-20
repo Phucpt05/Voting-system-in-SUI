@@ -6,9 +6,10 @@ import { useRemoveProposal } from '../utils/RemoveProposal';
 interface ProposalStatusControlsProps {
   proposal: Proposal;
   status: ProposalStatus;
+  onStatusChangeSuccess?: () => void;
 }
 
-export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status }) => {
+export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status, onStatusChangeSuccess }) => {
     const { delistProposal, isPending: isDelisting } = useDelistProposal();
     const {activateProposal, isPending: isActivating } = useActivateProposal();
     const {removeProposal, isPending: isRemoving} = useRemoveProposal();
@@ -16,9 +17,9 @@ export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposa
     const isActived = status.variant === "Active";
     const handleToggleActive = (isActived: boolean)=>{
         if(isActived){
-            delistProposal(proposal.id.id);
+            delistProposal(proposal.id.id, onStatusChangeSuccess);
         }else{
-            activateProposal(proposal.id.id);
+            activateProposal(proposal.id.id, onStatusChangeSuccess);
         }
 
     }
@@ -30,19 +31,19 @@ export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposa
                 e.stopPropagation();
                 handleToggleActive(isActived)
             }}
-            className={`w-1/3 px-3 py-1 ${isActived? "bg-red-500 hover:bg-red-600":"bg-green-500 hover:bg-green-600"}  text-white rounded-md text-sm  disabled:opacity-50 transition-colors duration-200`}
+            className={`w-1/2 px-3 py-1 mx-auto ${isActived? "bg-red-500 hover:bg-red-600":"bg-green-500 hover:bg-green-600"}  text-white rounded-md text-sm  disabled:opacity-50 transition-colors duration-200`}
             >
             {isActivating?"Activating...": isDelisting? "Delisting..." : isActived ? "Delist" : "Activative"}
             </button>
 
-            {!isActived && <button 
+            {!isActived && <button
                 onClick={(e)=>{
                     e.stopPropagation();
-                    removeProposal(proposal.id.id);
+                    removeProposal(proposal.id.id, onStatusChangeSuccess);
                 }}
-                className='w-1/3 px-3 py-1 text-white rounded-md text-sm  disabled:opacity-50 transition-colors duration-200 bg-red-500 hover:bg-red-600'
+                className='w-1/2 px-3 py-1 text-white rounded-md text-sm  disabled:opacity-50 transition-colors duration-200 bg-red-500 hover:bg-red-600'
             >
-                Remove
+                {isRemoving? "Removing..." : "Remove"}
             </button>}
         
         </div>

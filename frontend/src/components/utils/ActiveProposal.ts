@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 type ProposalStatus = "Active" | "Delisted";
 
 type UseProposalManagementReturn = {
-  changeProposalStatus: (proposalId: string, status: ProposalStatus) => void;
+  changeProposalStatus: (proposalId: string, status: ProposalStatus, onSuccess?: () => void) => void;
   isPending: boolean;
 };
 
@@ -91,8 +91,8 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
 export const useDelistProposal = () => {
   const { changeProposalStatus, isPending } = useProposalManagement();
   
-  const delistProposal = (proposalId: string) => {
-    changeProposalStatus(proposalId, "Delisted");
+  const delistProposal = (proposalId: string, onSuccess?: () => void) => {
+    changeProposalStatus(proposalId, "Delisted", onSuccess);
   };
   
   return { delistProposal, isPending };
@@ -101,8 +101,8 @@ export const useDelistProposal = () => {
 export const useActivateProposal = () => {
   const { changeProposalStatus, isPending } = useProposalManagement();
   
-  const activateProposal = (proposalId: string) => {
-    changeProposalStatus(proposalId, "Active");
+  const activateProposal = (proposalId: string, onSuccess?: () => void) => {
+    changeProposalStatus(proposalId, "Active", onSuccess);
   };
   
   return { activateProposal, isPending };

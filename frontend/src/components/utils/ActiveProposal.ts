@@ -1,7 +1,7 @@
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "../../config/networkConfig";
-import { toast } from "react-toastify";
+import { toast, ToastContent } from "react-toastify";
 
 // Types for better type safety
 type ProposalStatus = "Active" | "Delisted";
@@ -59,6 +59,12 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
         ? "Failed to activate proposal. Please try again." 
         : "Failed to delist proposal. Please try again.";
 
+      // Show pending toast
+      const pendingMessage = status === "Active"
+        ? "Activating proposal..."
+        : "Delisting proposal...";
+      const pendingToastId = toast.info(pendingMessage, { autoClose: false });
+      
       signAndExecute(
         {
           transaction: tx,
@@ -66,12 +72,25 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
         {
           onSuccess: () => {
             reset();
-            toast.success(successMessage);
+            // Update pending toast to success
+            toast.update(pendingToastId, {
+              render: successMessage,
+              type: "success",
+              autoClose: 1500
+            });
             if(onSuccess) onSuccess();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
           },
           onError: (error) => {
             console.error(`Error ${status}ing proposal:`, error);
-            toast.error(errorMessage);
+            // Update pending toast to error
+            toast.update(pendingToastId, {
+              render: errorMessage,
+              type: "error",
+              autoClose: 3000
+            });
           },
         }
       );

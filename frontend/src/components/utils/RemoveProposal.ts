@@ -21,18 +21,34 @@ export const useRemoveProposal = () => {
         target: `${packageId}::proposal::remove`,
       });
 
+      // Show pending toast
+      const pendingToastId = toast.info("Removing proposal...", { autoClose: false });
+      
       signAndExecute(
         {
           transaction: tx,
         },
         {
           onSuccess: () => {
-            toast.success("Proposal removed successfully!");
+            // Update pending toast to success
+            toast.update(pendingToastId, {
+              render: "Proposal removed successfully!",
+              type: "success",
+              autoClose: 1500
+            });
             if (onSuccess) onSuccess();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
           },
           onError: (error) => {
             console.error("Error removing proposal:", error);
-            toast.error("Failed to remove proposal. Please try again.");
+            // Update pending toast to error
+            toast.update(pendingToastId, {
+              render: "Failed to remove proposal. Please try again.",
+              type: "error",
+              autoClose: 3000
+            });
           },
         }
       );

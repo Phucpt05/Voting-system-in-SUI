@@ -1,7 +1,7 @@
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "../../config/networkConfig";
-import { toast, ToastContent } from "react-toastify";
+import { toast} from "react-toastify";
 
 // Types for better type safety
 type ProposalStatus = "Active" | "Delisted";

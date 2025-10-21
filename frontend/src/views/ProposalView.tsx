@@ -25,12 +25,6 @@ const ProposalView = () => {
    const voteNfts = extractVoteNfts(voteNftsRes);
    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
    const [isRefreshing, setIsRefreshing] = useState(false);
-   
-   // Check if current user is the dashboard creator
-   let dashboardCreator = "";
-   if (dataResponse?.data?.content && 'fields' in dataResponse.data.content) {
-     dashboardCreator = (dataResponse.data.content as any).fields.creator || "";
-   }
 
     if(isPending) return <div className='flex justify-center items-center py-16'>
         <div className='text-center text-gray-500 dark:text-gray-400'>

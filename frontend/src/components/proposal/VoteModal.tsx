@@ -4,7 +4,6 @@ import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction, useSuiCl
 import { useNetworkVariable } from "../../config/networkConfig";
 import { Transaction } from "@mysten/sui/transactions";
 import {toast} from "react-toastify";
-import { SuiClient } from "@mysten/sui/client";
 
 interface VoteModalProps{
   isOpen: boolean;

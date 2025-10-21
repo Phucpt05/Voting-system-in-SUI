@@ -67,7 +67,7 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
       
       signAndExecute(
         {
-          transaction: tx,
+          transaction: tx as any,
         },
         {
           onSuccess: () => {

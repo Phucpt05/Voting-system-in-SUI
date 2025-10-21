@@ -26,7 +26,7 @@ export const useRemoveProposal = () => {
       
       signAndExecute(
         {
-          transaction: tx,
+          transaction: tx as any,
         },
         {
           onSuccess: () => {

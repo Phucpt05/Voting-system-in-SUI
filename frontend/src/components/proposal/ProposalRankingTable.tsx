@@ -12,7 +12,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [loading, setLoading] = useState(true);
     
-    // Bước 1: Lấy dashboard để có danh sách proposal IDs
+    //  Lấy dashboard để có danh sách proposal IDs
     const { data: dashboardData, isPending: dashboardPending, error: dashboardError } = useSuiClientQuery(
         "getObject", {
         id: dashboardId,
@@ -27,7 +27,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
         ? (dashboardData.data.content.fields as any).proposals_ids || []
         : [];
 
-    // Bước 2: Dùng multiGetObjects để lấy tất cả proposals một lần
+    // Dùng multiGetObjects để lấy tất cả proposals một lần
     const { data: proposalsData, isPending: proposalsPending, error: proposalsError } = useSuiClientQuery(
         "multiGetObjects", {
         ids: proposalIds,

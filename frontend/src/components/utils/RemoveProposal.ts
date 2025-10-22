@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 export const useRemoveProposal = () => {
   const { mutate: signAndExecute, isPending } = useSignAndExecuteTransaction();
   const packageId = useNetworkVariable("packageId");
-  const adminCapId = useNetworkVariable("adminCapId");
 
   const removeProposal = async (proposalId: string, onSuccess?: () => void) => {
     try {
@@ -16,7 +15,6 @@ export const useRemoveProposal = () => {
       tx.moveCall({
         arguments: [
           tx.object(proposalId),
-          tx.object(adminCapId),
         ],
         target: `${packageId}::proposal::remove`,
       });

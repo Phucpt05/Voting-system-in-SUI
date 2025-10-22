@@ -1,6 +1,6 @@
 
 module voting_system::proposal;
-    use voting_system::dashboard::AdminCap;
+    // use voting_system::dashboard::AdminCap;
     use std::string::String;
     use sui::table::{Self, Table};
     use sui::url::{Url, new_unsafe_from_bytes};
@@ -96,6 +96,7 @@ module voting_system::proposal;
     }
 
     // ===admin function ===
+    /*
     public fun create(
         _admin_cap: &AdminCap,
         title: String,
@@ -103,7 +104,7 @@ module voting_system::proposal;
         expiration: u64,
         ctx: &mut TxContext
     ): ID{
-        let proposal = Proposal{            
+        let proposal = Proposal{
             id: object::new(ctx),
             title,
             description,
@@ -114,7 +115,7 @@ module voting_system::proposal;
             status: ProposalStatus::Active,
             voters : table::new(ctx),
         };
-        let id = proposal.id.to_inner(); 
+        let id = proposal.id.to_inner();
         transfer::share_object(proposal);
         id
     }
@@ -142,6 +143,58 @@ module voting_system::proposal;
     }
 
     fun change_status(self: &mut Proposal, _admin_cap: &AdminCap, status: ProposalStatus){
+        self.status = status;
+    }
+    */
+
+    // New functions without admin_cap requirements
+    public fun create(
+        title: String,
+        description: String,
+        expiration: u64,
+        ctx: &mut TxContext
+    ): ID{
+        let proposal = Proposal{
+            id: object::new(ctx),
+            title,
+            description,
+            voted_yes_count: 0,
+            voted_no_count: 0,
+            expiration,
+            creator: ctx.sender(),
+            status: ProposalStatus::Active,
+            voters : table::new(ctx),
+        };
+        let id = proposal.id.to_inner();
+        transfer::share_object(proposal);
+        id
+    }
+
+    public fun remove(self: Proposal){
+        let Proposal{
+            id,
+            title: _,
+            description: _,
+            voted_yes_count: _,
+            voted_no_count: _,
+            expiration: _,
+            status: _,
+            voters,
+            creator:_,
+        } = self;
+        table::drop(voters);
+        object::delete(id)
+    }
+    
+    public fun set_active_status(self: &mut Proposal){
+        self.change_status(ProposalStatus::Active);
+    }
+    
+    public fun set_delisted_status(self: &mut Proposal){
+        self.change_status(ProposalStatus::Delisted);
+    }
+
+    fun change_status(self: &mut Proposal, status: ProposalStatus){
         self.status = status;
     }
     fun issue_vote_proof(proposal: &Proposal, vote_yes: bool, ctx: &mut TxContext){

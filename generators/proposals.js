@@ -1,4 +1,4 @@
-const generatePTBCommand = ({ packageId, adminCapId, dashboardId, numProposals }) => {
+const generatePTBCommand = ({ packageId, dashboardId, numProposals }) => {
   let command = "sui client ptb `";
 
   for (let i = 1; i <= numProposals; i++) {
@@ -14,12 +14,10 @@ const generatePTBCommand = ({ packageId, adminCapId, dashboardId, numProposals }
     // Add proposal creation command (Windows-style)
     command += `
   --move-call ${packageId}::proposal::create \`
-  "@${adminCapId}" \`
   '"${title}"' '"${description}"' ${timestamp} \`
   --assign proposal_id \`
   --move-call ${packageId}::dashboard::register_proposal \`
-  "@${dashboardId}" \`
-  "@${adminCapId}" proposal_id`;
+  "@${dashboardId}" proposal_id`;
   }
 
   return command;
@@ -27,9 +25,8 @@ const generatePTBCommand = ({ packageId, adminCapId, dashboardId, numProposals }
 
 // Inputs
 const inputs = {
-  packageId: "0x7caae6c44345c4b21300730f7e298b70c487f6c6874de085d4081f66c69156e2",
-  adminCapId: "0xee24e1565d80bebadcaefc3e9eed24179d4faa83ed2a6e5c76deb9f4f3983f07",
-  dashboardId: "0xff3bc732ae5c5a8cececfcdf6023a7d1a69b67348f9abc72cd903b35b03d784e",
+  packageId: "0xe6f457e4cce09f7c09cf396760f78a6fd23866e1d7ef9b50414c62923a475ebf",
+  dashboardId: "0xb430ff30026d69bd5fe6106f8486a5c635cc478867075f64aa108950dbe75cbd",
   numProposals: 3, // số lượng proposal cần tạo
 };
 

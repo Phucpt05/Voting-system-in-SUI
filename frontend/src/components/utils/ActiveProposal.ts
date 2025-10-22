@@ -16,7 +16,6 @@ const createTransaction = (
   proposalId: string,
   status: ProposalStatus,
   packageId: string,
-  adminCapId: string
 ): Transaction => {
   const tx = new Transaction();
   
@@ -29,7 +28,6 @@ const createTransaction = (
   tx.moveCall({
     arguments: [
       tx.object(proposalId),
-      tx.object(adminCapId),
     ],
     target: `${packageId}::proposal::${functionName}`,
   });
@@ -41,7 +39,6 @@ const createTransaction = (
 export const useProposalManagement = (): UseProposalManagementReturn => {
   const { mutate: signAndExecute, isPending, reset} = useSignAndExecuteTransaction();
   const packageId = useNetworkVariable("packageId");
-  const adminCapId = useNetworkVariable("adminCapId");
 
   const changeProposalStatus = (
     proposalId: string, 
@@ -49,7 +46,7 @@ export const useProposalManagement = (): UseProposalManagementReturn => {
     onSuccess?: () => void
   ) => {
     try {
-      const tx = createTransaction(proposalId, status, packageId, adminCapId);
+      const tx = createTransaction(proposalId, status, packageId);
       
       const successMessage = status === "Active" 
         ? "Proposal activated successfully!" 

@@ -15,15 +15,14 @@ const SuiObjects: FC<SuiObjectProp> = ({objectRes}) => {
     return (
         <div className='mb-5 p-2 border rounded-lg bg-gray-50 dark:bg-gray-800'>
             <div key={`${objectRes.data?.objectId}-id`}>
-                <p><strong>ObjectID: {objectRes.data?.objectId}</strong></p>
+                <p><strong>ObjectID:</strong> {objectRes.data?.objectId}</p>
             </div>
             <div key={`${objectRes.data?.objectId}-type`}>
-                <p><strong>Type: {objectRes.data?.type}</strong></p>
+                <p><strong>Type:</strong> {objectRes.data?.type}</p>
             </div>
             <div key={`${objectRes.data?.objectId}-owner`}>
-                <p><strong>
-                    Owner: {typeof owner === "object" && owner !== null && "AddressOwner" in owner? owner.AddressOwner : "Unknown"}
-                </strong></p>
+                <p><strong>Owner:</strong>{typeof owner === "object" && owner !== null && "AddressOwner" in owner? owner.AddressOwner : "Unknown"}
+                </p>
             </div>
             <div key={`${objectRes.data?.objectId}-balance`}>
                 <p><strong>Balance:</strong>{balance}</p>

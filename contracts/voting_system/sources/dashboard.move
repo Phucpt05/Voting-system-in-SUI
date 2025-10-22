@@ -33,7 +33,15 @@ public fun new(otw: DASHBOARD, ctx: &mut TxContext) {
     transfer::share_object(dashboard);
     
 }
+/*
 public fun register_proposal(self: &mut Dashboard ,_admin_cap: &AdminCap ,proposal_id: ID){
+    // self.proposals_ids.push_back(proposal_id);
+    assert!(!self.proposals_ids.contains(&proposal_id), EDuplicateProposal);
+    vector::push_back(&mut self.proposals_ids, proposal_id);
+}
+*/
+
+public fun register_proposal(self: &mut Dashboard ,proposal_id: ID){
     // self.proposals_ids.push_back(proposal_id);
     assert!(!self.proposals_ids.contains(&proposal_id), EDuplicateProposal);
     vector::push_back(&mut self.proposals_ids, proposal_id);

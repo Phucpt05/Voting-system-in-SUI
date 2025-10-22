@@ -25,7 +25,6 @@ export const VoteModal: FC<VoteModalProps> = ({
   const suiClient = useSuiClient();
   const packageId = useNetworkVariable("packageId");
   
-  // Check if proposal is expired
   const isMilliseconds = proposal.expiration > 1000000000000;
   const expirationDate = isMilliseconds ? new Date(proposal.expiration) : new Date(proposal.expiration * 1000);
   const currentDate = new Date();

@@ -12,7 +12,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [loading, setLoading] = useState(true);
     
-    // Bước 1: Lấy dashboard để có danh sách proposal IDs
+    //  Lấy dashboard để có danh sách proposal IDs
     const { data: dashboardData, isPending: dashboardPending, error: dashboardError } = useSuiClientQuery(
         "getObject", {
         id: dashboardId,
@@ -27,7 +27,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
         ? (dashboardData.data.content.fields as any).proposals_ids || []
         : [];
 
-    // Bước 2: Dùng multiGetObjects để lấy tất cả proposals một lần
+    // Dùng multiGetObjects để lấy tất cả proposals một lần
     const { data: proposalsData, isPending: proposalsPending, error: proposalsError } = useSuiClientQuery(
         "multiGetObjects", {
         ids: proposalIds,
@@ -68,10 +68,19 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
             
             console.log("Processed proposals array:", proposalData);
             
-            // Sắp xếp các proposal theo voted_yes_count từ cao đến thấp
-            const proposalSort = [...proposalData].sort((a, b) => b.voted_yes_count - a.voted_yes_count);
+            // Calculate score for each proposal (vote_yes - vote_no) and set to 0 if negative
+            const proposalsWithScore = proposalData.map(proposal => {
+                const score = proposal.voted_yes_count - proposal.voted_no_count;
+                return {
+                    ...proposal,
+                    score: score < 0 ? 0 : score
+                };
+            });
+            
+            // Sắp xếp các proposal theo score từ cao đến thấp
+            const proposalSort = [...proposalsWithScore].sort((a, b) => b.score - a.score);
             const proposalRanking = proposalSort.filter((proposal)=> proposal.status.variant !== "Delisted");
-            console.log("Sorted proposals by voted_yes_count:", proposalRanking);
+            console.log("Sorted proposals by score:", proposalRanking);
 
             setProposals(proposalRanking);
             setLoading(false);
@@ -114,7 +123,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                     Proposal Rankings
                 </h1>
                 <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    Proposals ranked by the number of "Yes" votes from highest to lowest
+                    Proposals ranked by score (Yes votes - No votes) from highest to lowest
                 </p>
             </div>
 
@@ -131,45 +140,48 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                     </p>
                 </div>
             ) : (
-                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
                     <table className="min-w-full">
                         <thead className="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <th className="py-4 px-6 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Title
                                 </th>
-                                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <th className="py-4 px-6 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Description
                                 </th>
-                                <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <th className="py-4 px-6 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Yes Votes
                                 </th>
-                                <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <th className="py-4 px-6 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     No Votes
+                                </th>
+                                <th className="py-4 px-6 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    Score
                                 </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {proposals.map((proposal, index) => (
-                                <tr 
-                                    key={proposal.id.id} 
-                                    className={`hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition-colors duration-150 ${
+                                <tr
+                                    key={proposal.id.id}
+                                    className={`hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-150 ${
                                         index === 0 ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20' : ''
                                     }`}
                                     onClick={() => onProposalClick && onProposalClick(proposal.id.id)}
                                 >
-                                    <td className="py-4 px-4">
+                                    <td className="py-4 px-6">
                                         <div className="flex items-center">
                                             {index === 0 ? (
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 text-white font-bold mr-3">
+                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 text-white font-bold mr-3 shadow-md">
                                                     1
                                                 </span>
                                             ) : index === 1 ? (
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 text-white font-bold mr-3">
+                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 text-white font-bold mr-3 shadow-md">
                                                     2
                                                 </span>
                                             ) : index === 2 ? (
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-amber-700 to-amber-800 text-white font-bold mr-3">
+                                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-amber-700 to-amber-800 text-white font-bold mr-3 shadow-md">
                                                     3
                                                 </span>
                                             ) : (
@@ -182,12 +194,12 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4">
+                                    <td className="py-4 px-6">
                                         <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
                                             {proposal.description}
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4 text-center whitespace-nowrap">
+                                    <td className="py-4 px-6 text-center whitespace-nowrap">
                                         <div className="flex items-center justify-center">
                                             <span className="mr-1.5 text-green-500">👍</span>
                                             <span className="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -195,12 +207,25 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4 text-center whitespace-nowrap">
+                                    <td className="py-4 px-6 text-center whitespace-nowrap">
                                         <div className="flex items-center justify-center">
                                             <span className="mr-1.5 text-red-500">👎</span>
                                             <span className="text-sm font-semibold text-red-600 dark:text-red-400">
                                                 {proposal.voted_no_count}
                                             </span>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-6 text-center whitespace-nowrap">
+                                        <div className="flex items-center justify-center">
+                                            {proposal.score && proposal.score > 0 ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                    {proposal.score}
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                    {proposal.score || 0}
+                                                </span>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

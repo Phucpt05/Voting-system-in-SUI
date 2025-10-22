@@ -49,13 +49,13 @@ export const VoteModal: FC<VoteModalProps> = ({
       ],
       target: `${packageId}::proposal::vote`
     });
-    showToast("Progressing Transaction");
+    toast.info("Progressing Transaction...");
     signAndExecute({
       transaction: tx as any
     },{
       onError: () =>{
         alert("Transaction failed");
-        dissmissToast("Tx failed!")
+        toast.error("Tx failed!")
       },
       onSuccess: async ({digest}) =>{
         const {effects} = await suiClient.waitForTransaction({
@@ -78,7 +78,7 @@ export const VoteModal: FC<VoteModalProps> = ({
         } 
 
         console.log(effects);
-        dissmissToast("Tx Successful!")
+        toast.success("Transaction Successful!")
         reset();
         onVote(voteYes);
       }

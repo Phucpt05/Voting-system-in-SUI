@@ -18,7 +18,6 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   const { connectionStatus } = useCurrentWallet();
   const { mutate: signAndExecute, isPending, isSuccess, reset } = useSignAndExecuteTransaction();
   const packageId = useNetworkVariable("packageId");
-  const adminCapId = useNetworkVariable("adminCapId");
   const dashboardId = useNetworkVariable("dashboardId");
   const toastId = useRef<number | string>();
 
@@ -52,7 +51,6 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
     // Create proposal
     const proposalId = tx.moveCall({
       arguments: [
-        tx.object(adminCapId),
         tx.pure.string(title),
         tx.pure.string(description),
         tx.pure.u64(expirationTimestamp),
@@ -64,7 +62,6 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
     tx.moveCall({
       arguments: [
         tx.object(dashboardId),
-        tx.object(adminCapId),
         proposalId,
       ],
       target: `${packageId}::dashboard::register_proposal`

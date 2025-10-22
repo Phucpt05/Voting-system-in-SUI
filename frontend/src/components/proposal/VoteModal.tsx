@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC } from "react";
 import { Proposal } from "../../types";
 import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../../config/networkConfig";
@@ -24,7 +24,6 @@ export const VoteModal: FC<VoteModalProps> = ({
   const {mutate: signAndExecute, isPending, isSuccess, reset} = useSignAndExecuteTransaction();
   const suiClient = useSuiClient();
   const packageId = useNetworkVariable("packageId");
-  const toastId = useRef<number| string>();
   
   // Check if proposal is expired
   const isMilliseconds = proposal.expiration > 1000000000000;
@@ -33,11 +32,6 @@ export const VoteModal: FC<VoteModalProps> = ({
   const isExpired = expirationDate < currentDate;
 
   if (!isOpen) return null;
-  const showToast = (message: string) => toastId.current = toast(message, {autoClose: false});
-  const dissmissToast = (message: string) =>{
-    toast.dismiss(toastId.current);
-    toast(message, {autoClose: 2000});
-  };
 
   const vote = (voteYes: boolean )=>{
     const tx = new Transaction();

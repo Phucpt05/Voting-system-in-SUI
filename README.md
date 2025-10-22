@@ -1,3 +1,5 @@
+Hiểu rồi, tôi sẽ gộp tất cả thành **một khối văn bản sẵn sàng copy-paste** vào `README.md` mà không cần chỉnh gì nữa:
+
 ````markdown
 # Sui Voting App
 
@@ -48,3 +50,10 @@ node generators/proposals.js
 ```
 
 This setup allows you to fully interact with the SUI voting system and develop further features.
+
+```
+
+Bạn chỉ cần **copy toàn bộ từ đầu đến cuối** vào file `README.md`, lưu lại là xong.  
+
+Nếu muốn, tôi có thể làm thêm **phiên bản siêu ngắn gọn** chỉ 1 trang, đọc 1 phút là hiểu hết cách dùng và deploy. Bạn có muốn tôi làm luôn không?
+```

@@ -27,7 +27,7 @@ cd contracts/voting_system/
 # Publish the smart contract
 sui client publish
 
-# After publishing, copy the following IDs (if on master branch):
+# After publishing, copy the following IDs:
 # - package_id
 # - dashboard_id
 # - admin_cap_id

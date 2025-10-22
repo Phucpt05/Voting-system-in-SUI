@@ -1,61 +1,53 @@
-```markdown
-# Voting System on SUI
+---
 
-A decentralized voting system built on the SUI blockchain.
+# Sui Voting App
+
+A decentralized voting system built on the SUI blockchain, allowing users to create, manage, and vote on proposals using NFTs as proof of voting.
 
 ## Features
 
-- Connect your wallet via **Suiet** or **Slush** extension.
-- Switch to the **Testnet** network and click **Faucet** to receive SUI balance.
-- Create, activate, remove, or delist proposals.
-- View proposal rankings at `/rankings`.
-- Check your wallet objects at `/wallets`.
-- After voting, view your **Proof of Voting** as NFTs in your wallet extension.
+* Connect your wallet via **Suiet** or **Slush** extension.
+* Switch to **Testnet** and click **Faucet** to receive SUI balance.
+* Perform actions such as **create**, **delist**, **activate**, and **remove proposals**.
+* View proposal rankings at `/rankings`.
+* Check your wallet objects at `/wallets`.
+* After voting, see **proof of voting NFTs** in your wallet extension.
 
-## Development
+## Development Setup
 
-Clone the repository and run the frontend:
+```bash
+# Clone the repository (no_admin_cap branch)
+git clone -b no_admin_cap --single-branch https://github.com/Phucpt05/Voting-system-in-SUI.git
 
-```
-
-git clone -b no_admin_cap --single-branch [https://github.com/Phucpt05/Voting-system-in-SUI.git](https://github.com/Phucpt05/Voting-system-in-SUI.git)
 cd frontend
 pnpm install
 pnpm run dev
-
+# Access app at: http://localhost:5173
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to run the app locally.
+## Redeploy Smart Contracts
 
-## Redeploy Smart Contract
+```bash
+# Navigate to the contracts folder
+cd contracts/voting_system/
 
-To redeploy the voting smart contract:
-
-1. Navigate to the contract folder:
-
-```
-
-cd ./contracts/voting_system/
-
-```
-
-2. Publish the contract using SUI CLI:
-
-```
-
+# Publish the smart contract
 sui client publish
 
-```
+# After publishing, copy the following IDs (if on master branch):
+# - package_id
+# - dashboard_id
+# - admin_cap_id
 
-3. Copy the generated `package_id`, `dashboard_id`, and `admin_cap_id` (if using the `master` branch) and paste them into the corresponding constants in `generators/proposals.js` and `frontend/constants.ts`.
+# Update constants in:
+# - frontend/constants.ts
+# - generators/proposals.js
 
-4. Run the proposal generator script:
-
-```
-
+# Initialize proposals
 node generators/proposals.js
-
+# Copy generated SUI CLI commands and run in terminal to create proposals
 ```
 
-This will output the SUI CLI commands to create proposals. Copy and execute these commands in the terminal to create proposals on the blockchain.
-```
+This setup allows you to fully interact with the SUI voting system and develop further features.
+
+---

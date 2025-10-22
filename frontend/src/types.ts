@@ -14,6 +14,7 @@ export interface Proposal{
     expiration: number,
     voter_registry: string[],
     creator: string,
+    score?: number, // Added score field (optional since it's calculated)
 }
 export interface VoteNft {
     id: SuiID,

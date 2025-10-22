@@ -1,17 +1,16 @@
----
-
+````markdown
 # Sui Voting App
 
 A decentralized voting system built on the SUI blockchain, allowing users to create, manage, and vote on proposals using NFTs as proof of voting.
 
 ## Features
 
-* Connect your wallet via **Suiet** or **Slush** extension.
-* Switch to **Testnet** and click **Faucet** to receive SUI balance.
-* Perform actions such as **create**, **delist**, **activate**, and **remove proposals**.
-* View proposal rankings at `/rankings`.
-* Check your wallet objects at `/wallets`.
-* After voting, see **proof of voting NFTs** in your wallet extension.
+- Connect your wallet via **Suiet** or **Slush** extension.  
+- Switch to **Testnet** and click **Faucet** to receive SUI balance.  
+- Perform actions such as **create**, **delist**, **activate**, and **remove proposals**.  
+- View proposal rankings at `/rankings`.  
+- Check your wallet objects at `/wallets`.  
+- After voting, see **proof of voting NFTs** in your wallet extension.
 
 ## Development Setup
 
@@ -23,7 +22,7 @@ cd frontend
 pnpm install
 pnpm run dev
 # Access app at: http://localhost:5173
-```
+````
 
 ## Redeploy Smart Contracts
 
@@ -49,5 +48,3 @@ node generators/proposals.js
 ```
 
 This setup allows you to fully interact with the SUI voting system and develop further features.
-
----

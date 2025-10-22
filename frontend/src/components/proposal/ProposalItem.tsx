@@ -108,7 +108,7 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                                 ? "bg-gradient-to-r from-red-100 to-red-200 text-red-800 dark:from-red-900/40 dark:to-red-800/40 dark:text-red-300"
                                 : "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 dark:from-blue-900/40 dark:to-indigo-900/40 dark:text-blue-300"
                             }`}>
-                            {isDelisted? "Delisted": formatUnixTime(proposal?.expiration)}
+                            {isExpired ? "Expired" : isDelisted ? "Delisted" : formatUnixTime(proposal?.expiration)}
                         </div>
                     </div>
 
@@ -152,11 +152,26 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                         </div>
                     </div>
                     
-                    {/* Admin controls for activating/delisting proposals */}
-                    {currentAccount && (
+                    {/* Show expiration date for expired proposals */}
+                    {isExpired && (
+                        <div className="text-xs text-red-500 dark:text-red-400 font-medium">
+                            Expired on: {expirationDate.toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            })}
+                        </div>
+                    )}
+                    
+                    {/* Admin controls for activating/delisting proposals - only show if not expired */}
+                    {currentAccount && !isExpired && (
                         <ProposalStatusControls
                             proposal={proposal}
                             status={proposal.status}
+                            expiration={proposal.expiration}
+                            isExpired={isExpired}
                             onStatusChangeSuccess={async () => {
                                 // Refetch the proposal data to get updated status
                                 await refetchProposal();
@@ -167,6 +182,8 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                             }}
                         />
                     )}
+                    
+                    {/* Placeholder for expired proposals to maintain consistent height */}
                 </div>
             </div>
 

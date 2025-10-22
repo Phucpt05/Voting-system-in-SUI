@@ -6,10 +6,12 @@ import { useRemoveProposal } from '../utils/RemoveProposal';
 interface ProposalStatusControlsProps {
   proposal: Proposal;
   status: ProposalStatus;
+  expiration: number;
+  isExpired: boolean;
   onStatusChangeSuccess?: () => void;
 }
 
-export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status, onStatusChangeSuccess }) => {
+export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status, expiration, isExpired, onStatusChangeSuccess }) => {
     const { delistProposal, isPending: isDelisting } = useDelistProposal();
     const {activateProposal, isPending: isActivating } = useActivateProposal();
     const {removeProposal, isPending: isRemoving} = useRemoveProposal();
@@ -22,6 +24,11 @@ export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposa
             activateProposal(proposal.id.id, onStatusChangeSuccess);
         }
 
+    }
+
+    // Don't render any buttons if the proposal is expired
+    if (isExpired) {
+        return null;
     }
 
     return (

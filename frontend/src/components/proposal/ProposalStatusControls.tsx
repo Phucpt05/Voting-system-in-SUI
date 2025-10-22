@@ -11,7 +11,7 @@ interface ProposalStatusControlsProps {
   onStatusChangeSuccess?: () => void;
 }
 
-export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status, expiration, isExpired, onStatusChangeSuccess }) => {
+export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposal, status, isExpired, onStatusChangeSuccess }) => {
     const { delistProposal, isPending: isDelisting } = useDelistProposal();
     const {activateProposal, isPending: isActivating } = useActivateProposal();
     const {removeProposal, isPending: isRemoving} = useRemoveProposal();

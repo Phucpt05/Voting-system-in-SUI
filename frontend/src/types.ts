@@ -15,6 +15,7 @@ export interface Proposal{
     voter_registry: string[],
     creator: string,
     blobs_id?: string,
+    image_url?: string, // From Display
 }
 export interface VoteNft {
     id: SuiID,

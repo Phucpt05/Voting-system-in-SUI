@@ -97,7 +97,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 p-7 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95 animate-in fade-in-90 zoom-in-90">
+      <div className="bg-white dark:bg-gray-800 p-7 rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all duration-300 scale-95 animate-in fade-in-90 zoom-in-90">
         <div className="flex justify-between items-start mb-5">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Create New Proposal</h2>
           <button

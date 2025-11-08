@@ -7,7 +7,8 @@ A decentralized voting system built on the SUI blockchain, allowing users to cre
 - Connect your wallet via **Suiet** or **Slush** extension.  
 - Switch to **Testnet** and click **Faucet** to receive SUI balance.  
 - Perform actions such as **create**, **remove**, **delist**, **activate**, and **voting proposals**. 
-- View proposal rankings at `/rankings`.  
+- View proposal rankings at `/rankings`.
+- View img through blob_id (walrus)  
 - Check your wallet objects at `/wallets`.  
 - After voting, see **proof of voting NFTs** in your wallet extension.
 

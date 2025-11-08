@@ -7,7 +7,6 @@ module voting_system::proposal;
     use sui::url::{Url, new_unsafe_from_bytes};
     use sui::clock::Clock;
     use sui::event;
-    use sui::display;
 
     const EDuplicateVote: u64 = 0;
     const EProposalDelisted: u64 = 1;
@@ -18,11 +17,8 @@ module voting_system::proposal;
         Active,
         Delisted,
     }
-    
-    public struct PROPOSAL has drop {}
-    
     //struct
-    public struct Proposal has key {
+    public struct Proposal has key{
         id: UID,
         title: String,
         description: String,
@@ -178,19 +174,6 @@ module voting_system::proposal;
             blobs_id,
         };
         let id = proposal.id.to_inner();
-        
-        // Set Display for the proposal
-        let mut display = display::new<Proposal, PROPOSAL>(
-            display::object(),
-        );
-        display::add(&mut display, b"name", title);
-        display::add(&mut display, b"description", description);
-        let mut image_url = b"https://aggregator.walrus-testnet.walrus.space/v1/blobs/".to_string();
-        std::string::append(&mut image_url, blobs_id);
-        display::add(&mut display, b"image_url", image_url);
-        display::update_version(&mut display);
-        transfer::share_object(display);
-        
         transfer::share_object(proposal);
         id
     }

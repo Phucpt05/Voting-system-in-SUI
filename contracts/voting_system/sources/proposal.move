@@ -2,6 +2,7 @@
 module voting_system::proposal;
     use voting_system::dashboard::AdminCap;
     use std::string::String;
+    use std::option::Option;
     use sui::table::{Self, Table};
     use sui::url::{Url, new_unsafe_from_bytes};
     use sui::clock::Clock;
@@ -27,6 +28,7 @@ module voting_system::proposal;
         creator: address,
         status: ProposalStatus,
         voters: Table<address, bool>,
+        blobs_id: String,
     }
     public struct VoteRegisted has copy, drop{
         proposal_id: ID,
@@ -94,6 +96,10 @@ module voting_system::proposal;
     public fun creator (self: &Proposal) : address{
         self.creator
     }
+    
+    public fun blobs_id (self: &Proposal) : String{
+        self.blobs_id
+    }
 
     // ===admin function ===
     /*
@@ -152,6 +158,7 @@ module voting_system::proposal;
         title: String,
         description: String,
         expiration: u64,
+        blobs_id: String,
         ctx: &mut TxContext
     ): ID{
         let proposal = Proposal{
@@ -164,6 +171,7 @@ module voting_system::proposal;
             creator: ctx.sender(),
             status: ProposalStatus::Active,
             voters : table::new(ctx),
+            blobs_id,
         };
         let id = proposal.id.to_inner();
         transfer::share_object(proposal);
@@ -181,6 +189,7 @@ module voting_system::proposal;
             status: _,
             voters,
             creator:_,
+            blobs_id: _,
         } = self;
         table::drop(voters);
         object::delete(id)

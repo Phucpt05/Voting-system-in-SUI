@@ -22,8 +22,9 @@ fun new_proposal(admin_cap: &AdminCap, ctx: &mut TxContext): ID{
 fun new_proposal(ctx: &mut TxContext): ID{
     let tile = b"test".to_string();
     let desc = b"test".to_string();
+    let blobs_id = b"test_blob_id".to_string();
 
-    proposal::create(tile, desc, 2000000000000, ctx)
+    proposal::create(tile, desc, 2000000000000, blobs_id, ctx)
 }
 
 /*
@@ -51,6 +52,7 @@ fun test_create_proposal_with_admin(){
         assert!(proposal::voted_yes_count(&created_proposal) == 0);
         assert!(proposal::voted_no_count(&created_proposal) ==0);
         assert!(proposal::creator(&created_proposal) == user);
+        assert!(proposal::blobs_id(&created_proposal) == b"test_blob_id".to_string());
         test_scenario::return_shared(created_proposal);
         // created_proposal.title();
         // proposal::title(&created_proposal)

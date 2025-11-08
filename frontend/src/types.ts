@@ -14,12 +14,31 @@ export interface Proposal{
     expiration: number,
     voter_registry: string[],
     creator: string,
-    score?: number, // Added score field (optional since it's calculated)
+    blobs_id?: string,
 }
 export interface VoteNft {
     id: SuiID,
     proposalId: string,
     url: string,
+}
+
+export interface WalrusResponse {
+    newlyCreated?: {
+        blobObject?: {
+            blobId: string;
+        };
+    };
+}
+
+export interface UploadState {
+    isUploading: boolean;
+    error: string | null;
+    progress: number;
+}
+
+export interface ProposalImageUploadProps {
+    onUpload: (data: { info: WalrusResponse; mediaType: string }) => void;
+    currentImage?: string;
 }
 
 

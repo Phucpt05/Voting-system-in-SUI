@@ -1,17 +1,20 @@
 // PACKAGE ID
-export const TESTNET_PACKAGE_ID ="0xcd62e598668be6609359a72e7e7b06ffd1126add22cadb4fda240cb3688f25b0";
+export const TESTNET_PACKAGE_ID ="0x23967e1d9d0be10cec5148506cb378caf14a638177c1176e28effee27b0694f6";
 export const DEV_PACKAGE_ID ="0x123";
 export const MAINNET_PACKAGE_ID ="0x123";
 // ADMINCAP
-export const TESTNET_ADMIN_CAP ="0x862429d0ef4055ca495a973af1f41bbe1b3dddfbb9d4dce4a17d2bebc18941ed";
+export const TESTNET_ADMIN_CAP ="0x3c0c4a7296e55f951e7431348421f2cf3056c2ad3053c4a63a7dbcac4f149a00";
 export const DEVNET_ADMIN_CAP ="0x123";
 export const MAINNET_ADMIN_CAP ="0x133";
 // DASHBOARD
-export const TESTNET_DASHBOARD ="0x28eedce6d37d7a1bfc199377ffe83da735870266d7a68859822afd534e2ed57c";
+export const TESTNET_DASHBOARD ="0xe491203dd967078c122e1ab82e5071482718d3935a3def3f1cf5b4ab17030e61";
 export const DEVNET_DASHBOARD ="0x123123";
 export const MAINNET_DASHBOARD ="0x99999";
 
 export const PUBLISHER_ID ="0xc437c89a425d9f39d186ee0794929ed46068b07a4c968e8b572d06dec2b7d755";
+
+export const AGGREGATOR=`https://aggregator.walrus-testnet.walrus.space`
+export const PUBLISHER=`https://publisher.walrus-testnet.walrus.space`
 
 
 

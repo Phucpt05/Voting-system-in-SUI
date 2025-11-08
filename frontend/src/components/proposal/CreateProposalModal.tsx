@@ -3,6 +3,8 @@ import { ConnectButton, useCurrentWallet, useSignAndExecuteTransaction} from "@m
 import { useNetworkVariable } from "../../config/networkConfig";
 import { Transaction } from "@mysten/sui/transactions";
 import { toast } from "react-toastify";
+import ProposalImageUpload from "./ProposalImageUpload";
+import { WalrusResponse } from "../../types";
 
 interface CreateProposalModalProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [expiration, setExpiration] = useState("");
+  const [blobsId, setBlobsId] = useState("");
 
   if (!isOpen) return null;
 
@@ -34,8 +37,8 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   };
 
   const createProposal = () => {
-    if (!title || !description || !expiration) {
-      showToast("Please fill all fields");
+    if (!title || !description || !expiration || !blobsId) {
+      showToast("Please fill all fields and upload an image");
       return;
     }
 
@@ -54,6 +57,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
         tx.pure.string(title),
         tx.pure.string(description),
         tx.pure.u64(expirationTimestamp),
+        tx.pure.string(blobsId),
       ],
       target: `${packageId}::proposal::create`
     });
@@ -84,11 +88,12 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
         setTitle("");
         setDescription("");
         setExpiration("");
+        setBlobsId("");
       }
     });
   };
 
-  const isFormValid = title && description && expiration && !isPending && !isSuccess;
+  const isFormValid = title && description && expiration && blobsId && !isPending && !isSuccess;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -131,6 +136,18 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
               placeholder="Enter proposal description"
               rows={3}
               disabled={isPending || isSuccess}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Proposal Image
+            </label>
+            <ProposalImageUpload
+              onUpload={(data: { info: WalrusResponse; mediaType: string }) => {
+                const blobId = data.info.newlyCreated?.blobObject?.blobId || "";
+                setBlobsId(blobId);
+              }}
             />
           </div>
 

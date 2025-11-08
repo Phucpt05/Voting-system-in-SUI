@@ -5,6 +5,7 @@ import { Proposal, VoteNft } from "../../types";
 import { VoteModal } from "./VoteModal";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { ProposalStatusControls } from "./ProposalStatusControls";
+import { AGGREGATOR } from "../../constants";
 
 interface ProposalItemPros {
     proposal_id: string,
@@ -82,6 +83,22 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                             </span>
                         </div>
                     </div>
+
+                    {/* Proposal Image */}
+                    {proposal?.blobs_id && (
+                        <div className="mb-5 flex justify-center">
+                            <img
+                                src={`${AGGREGATOR}/v1/blobs/${proposal.blobs_id}`}
+                                alt={proposal.title}
+                                className="rounded-lg max-w-full h-auto max-h-64 object-cover"
+                                onError={(e) => {
+                                    // Handle image loading errors
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                    )}
 
                     {/* Description with better styling */}
                     <div className="mb-5">

@@ -11,6 +11,9 @@ export const WalletStatus = () =>{
                     <p>Wallet Connected</p>
                     <p className="text-gray-700 dark:text-gray-300 font-mono">Address: {account.address}</p>
                     <p className="text-gray-700 dark:text-gray-300 font-mono">Network: {account.chains}</p>
+                    <div className="flex items-center space-x-2">
+                        <span className="text-gray-700 dark:text-gray-300">Status:</span>
+                    </div>
                 </div>
             ) : (
                 <p className="text-gray-700 dark:text-gray-300"><strong>No wallet connected</strong></p>

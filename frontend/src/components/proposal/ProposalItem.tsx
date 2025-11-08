@@ -73,7 +73,7 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                             {!!voteNft?.url && <img src={voteNft?.url} className="w-9 h-8 rounded-full " />}
                         </div>
                         {/* Add creator info */}
-                        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
                             <span className="inline-flex items-center">
                                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />

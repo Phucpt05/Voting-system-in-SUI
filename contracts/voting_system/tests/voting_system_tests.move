@@ -118,6 +118,7 @@ fun test_register_proposal_without_admin(){
     {
         let otw: DASHBOARD = dashboard::new_otw(scenario.ctx());
         dashboard::new(otw, scenario.ctx());
+        dashboard::issue_admin_cap(scenario.ctx());
     };
     scenario.next_tx(user);
     {
@@ -412,6 +413,9 @@ fun test_change_proposal_status(){
     let creator = @0xA01;
     
     let mut scenario: Scenario = test_scenario::begin(creator);
+    {
+        dashboard::issue_admin_cap(scenario.ctx());
+    };
     scenario.next_tx(creator);
     {
         new_proposal(scenario.ctx());
@@ -425,22 +429,26 @@ fun test_change_proposal_status(){
     };
     scenario.next_tx(creator);
     {
+        let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
         let mut proposal = test_scenario::take_shared<Proposal>(&scenario);
-        proposal.set_delisted_status();
+        proposal.set_delisted_status(&admin_cap);
         
         assert!(!proposal.is_active(), EWrongStatus);
 
         test_scenario::return_shared(proposal);
+        test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
 
     };
     scenario.next_tx(creator);
     {
+        let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
         let mut proposal = test_scenario::take_shared<Proposal>(&scenario);
-        proposal.set_active_status();
+        proposal.set_active_status(&admin_cap);
         
         assert!(proposal.is_active(), EWrongStatus);
 
         test_scenario::return_shared(proposal);
+        test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
 
     };
     test_scenario::end(scenario);
@@ -547,6 +555,9 @@ fun test_remove_proposal(){
     let creator = @0xA01;
 
     let mut scenario: Scenario = test_scenario::begin(creator);
+    {
+        dashboard::issue_admin_cap(scenario.ctx());
+    };
     scenario.next_tx(creator);
     {
         new_proposal(scenario.ctx());
@@ -554,8 +565,10 @@ fun test_remove_proposal(){
 
     scenario.next_tx(creator);
     {
+        let admin_cap = test_scenario::take_from_sender<AdminCap>(&scenario);
         let proposal = test_scenario::take_shared<Proposal>(&scenario);
-        proposal.remove();
+        proposal.remove(&admin_cap);
+        test_scenario::return_to_sender<AdminCap>(&scenario, admin_cap);
     };
     scenario.next_tx(creator);
     {

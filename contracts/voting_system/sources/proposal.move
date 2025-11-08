@@ -1,6 +1,6 @@
 
 module voting_system::proposal;
-    // use voting_system::dashboard::AdminCap;
+    use voting_system::dashboard::AdminCap;
     use std::string::String;
     use sui::table::{Self, Table};
     use sui::url::{Url, new_unsafe_from_bytes};
@@ -170,7 +170,7 @@ module voting_system::proposal;
         id
     }
 
-    public fun remove(self: Proposal){
+    public fun remove(self: Proposal, _admin_cap: &AdminCap){
         let Proposal{
             id,
             title: _,
@@ -186,11 +186,11 @@ module voting_system::proposal;
         object::delete(id)
     }
     
-    public fun set_active_status(self: &mut Proposal){
+    public fun set_active_status(self: &mut Proposal, _admin_cap: &AdminCap){
         self.change_status(ProposalStatus::Active);
     }
     
-    public fun set_delisted_status(self: &mut Proposal){
+    public fun set_delisted_status(self: &mut Proposal, _admin_cap: &AdminCap){
         self.change_status(ProposalStatus::Delisted);
     }
 

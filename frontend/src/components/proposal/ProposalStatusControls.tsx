@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Proposal, ProposalStatus } from '../../types';
 import { useActivateProposal, useDelistProposal } from '../utils/ActiveProposal';
 import { useRemoveProposal } from '../utils/RemoveProposal';
+import { useIsAdmin } from '../../hooks/useIsAdmin';
 
 interface ProposalStatusControlsProps {
   proposal: Proposal;
@@ -15,8 +16,14 @@ export const ProposalStatusControls: FC<ProposalStatusControlsProps> = ({proposa
     const { delistProposal, isPending: isDelisting } = useDelistProposal();
     const {activateProposal, isPending: isActivating } = useActivateProposal();
     const {removeProposal, isPending: isRemoving} = useRemoveProposal();
+    const { isAdmin, isLoading } = useIsAdmin();
 
     const isActived = status.variant === "Active";
+    
+    // Nếu đang kiểm tra quyền hoặc không phải admin, không hiển thị controls
+    if (isLoading || !isAdmin) {
+        return null;
+    }
     const handleToggleActive = (isActived: boolean)=>{
         if(isActived){
             delistProposal(proposal.id.id, onStatusChangeSuccess);

@@ -22,6 +22,8 @@ const ProposalView = () => {
         }
     }
     );
+    console.log("ProposalView - dashboard dataResponse:", dataResponse);
+
    const voteNfts = extractVoteNfts(voteNftsRes);
    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
    const [isRefreshing, setIsRefreshing] = useState(false); 

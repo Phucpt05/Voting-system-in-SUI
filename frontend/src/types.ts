@@ -7,7 +7,7 @@ export interface ProposalStatus{
 export interface Proposal{
     id: SuiID,
     title: string,
-    description: string,
+    description: string | null, // Option<String> in Move contract
     status: ProposalStatus,
     voted_yes_count: number,
     voted_no_count: number,
@@ -16,6 +16,7 @@ export interface Proposal{
     creator: string,
     blobs_id?: string,
     image_url?: string, // From Display
+    score?: number, 
 }
 export interface VoteNft {
     id: SuiID,

@@ -36,17 +36,13 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
         }
     },
     {
-        enabled: proposalIds.length > 0, // Chỉ chạy khi có ID
+        enabled: proposalIds.length > 0, 
     }
     );
-    console.log(proposalsData);
     useEffect(() => {
-        if (proposalsData) {
-            console.log("All proposals data:", proposalsData);
-            
+        if (proposalsData) {            
             const proposalData: Proposal[] = [];
             
-            // Xử lý dữ liệu từ multiGetObjects
             proposalsData.forEach((obj: any) => {
                 if (obj.data?.content?.dataType === "moveObject") {
                     const fields = obj.data.content.fields;
@@ -54,7 +50,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                     const proposal: Proposal = {
                         id: { id: obj.data.objectId },
                         title: fields.title,
-                        description: fields.description,
+                        description: fields.description || null, // Option<String> can be null
                         status: fields.status,
                         voted_yes_count: Number(fields.voted_yes_count),
                         voted_no_count: Number(fields.voted_no_count),
@@ -65,8 +61,6 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                     proposalData.push(proposal);
                 }
             });
-            
-            console.log("Processed proposals array:", proposalData);
             
             // Calculate score for each proposal (vote_yes - vote_no) and set to 0 if negative
             const proposalsWithScore = proposalData.map(proposal => {
@@ -196,7 +190,7 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                            {proposal.description}
+                                            {proposal.description || <span className="italic text-gray-400">No description</span>}
                                         </div>
                                     </td>
                                     <td className="py-4 px-6 text-center whitespace-nowrap">
@@ -210,8 +204,15 @@ export const ProposalRankingTable: FC<ProposalRankingTableProps> = ({ onProposal
                                     <td className="py-4 px-6 text-center whitespace-nowrap">
                                         <div className="flex items-center justify-center">
                                             <span className="mr-1.5 text-red-500">👎</span>
-                                            <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+                                            <span className="text-sm font-semibold text-green-600 dark:text-green-400">
                                                 {proposal.voted_no_count}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-6 text-center whitespace-nowrap">
+                                        <div className="flex items-center justify-center">
+                                            <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+                                                {proposal.score}
                                             </span>
                                         </div>
                                     </td>

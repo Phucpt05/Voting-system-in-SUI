@@ -100,11 +100,13 @@ export const ProposalItem: FC<ProposalItemPros> = ({ proposal_id, voteNft, onVot
                     )}
 
                     {/* Description with better styling */}
-                    <div className="mb-3">
-                        <p className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 ${isExpired ? "text-red-400 dark:text-red-300" : ""}`}>
-                            {proposal?.description}
-                        </p>
-                    </div>
+                    {proposal?.description && (
+                        <div className="mb-3">
+                            <p className={`text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 ${isExpired ? "text-red-400 dark:text-red-300" : ""}`}>
+                                {proposal.description}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Vote counts with better visual presentation */}
                     <div className="flex justify-between items-center mb-3">
@@ -227,7 +229,8 @@ function parseProposal(data: SuiObjectData): Proposal | null {
     // Use Display data if available, otherwise fall back to content fields
     const display = data.display?.data;
     const title = display?.name || rest.title || "";
-    const description = display?.description || rest.description || "";
+    // Description is Option<String> in Move, can be null
+    const description = display?.description || rest.description || null;
     const imageUrl = display?.image_url || "";
     
     // Extract blobs_id from image_url if it's a full URL, otherwise use blobs_id field
@@ -243,7 +246,7 @@ function parseProposal(data: SuiObjectData): Proposal | null {
     return {
         ...rest,
         title,
-        description,
+        description: description || null, // Ensure it's null if empty string
         voted_yes_count: Number(voted_yes_count),
         voted_no_count: Number(voted_no_count),
         expiration: Number(expiration),

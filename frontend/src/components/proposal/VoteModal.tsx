@@ -94,7 +94,9 @@ export const VoteModal: FC<VoteModalProps> = ({
           </button>
         </div>
         
-        <p className="mb-6 text-gray-700 dark:text-gray-300 leading-relaxed">{proposal.description}</p>
+        {proposal.description && (
+          <p className="mb-6 text-gray-700 dark:text-gray-300 leading-relaxed">{proposal.description}</p>
+        )}
         
         <div className="flex flex-col gap-5">
           {/* Vote counts display */}

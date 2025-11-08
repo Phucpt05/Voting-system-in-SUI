@@ -37,8 +37,8 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
   };
 
   const createProposal = () => {
-    if (!title || !description || !expiration || !blobsId) {
-      showToast("Please fill all fields and upload an image");
+    if (!title || !expiration || !blobsId) {
+      showToast("Please fill all required fields and upload an image");
       return;
     }
 
@@ -51,11 +51,18 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
 
     const tx = new Transaction();
     
-    // Create proposal
+    // Create proposal - description is now Option<String>
+    // In Sui SDK, Option is represented as a vector with 0 or 1 element
+    // For Option::some(value), pass [value]
+    // For Option::none, pass []
+    const descriptionArg = description.trim() 
+      ? tx.pure.option('string', description) 
+      : tx.pure.option('string', null);
+    
     const proposalId = tx.moveCall({
       arguments: [
         tx.pure.string(title),
-        tx.pure.string(description),
+        descriptionArg,
         tx.pure.u64(expirationTimestamp),
         tx.pure.string(blobsId),
       ],
@@ -93,7 +100,7 @@ export const CreateProposalModal: FC<CreateProposalModalProps> = ({
     });
   };
 
-  const isFormValid = title && description && expiration && blobsId && !isPending && !isSuccess;
+  const isFormValid = title && expiration && blobsId && !isPending && !isSuccess;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
